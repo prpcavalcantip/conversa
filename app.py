@@ -107,8 +107,3 @@ if st.button("💬 Gerar devocional"):
 
 st.markdown('</div>', unsafe_allow_html=True)
 st.markdown('<div class="footer">Feito com ❤️ usando Streamlit & OpenAI</div>', unsafe_allow_html=True)
-        devotional = generate_devotional(feeling)
-        st.markdown(devotional)
-
-st.markdown("<hr>", unsafe_allow_html=True)
-st.caption("Feito com ❤️ usando Streamlit & OpenAI")
