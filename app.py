@@ -1,22 +1,14 @@
-import streamlit as st
-import openai
+mport streamlit as st
 import os
-from dotenv import load_dotenv
+import openai
 
-# Carrega variáveis de ambiente do .env
-load_dotenv()
-
-# Configuração da página
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="🙏")
+
 st.title("Minha Conversa com Jesus")
 st.write("Digite como você está se sentindo e receba uma mensagem devocional cristã personalizada.")
 
-# Cache local para evitar chamadas repetidas
-@st.cache_data(show_spinner=False)
-def generate_cached_devotional(feeling):
-    return generate_devotional(feeling)
+feeling = st.text_input("Como você está se sentindo hoje?")
 
-# Função principal para gerar devocional
 def generate_devotional(feeling):
     prompt = f"""
 Você é um assistente espiritual cristão. Sempre que receber uma frase sobre um sentimento, GERE UMA MENSAGEM DE DEVOCIONAL CRISTÃ seguindo EXATAMENTE este formato em Markdown:
@@ -33,34 +25,43 @@ Você é um assistente espiritual cristão. Sempre que receber uma frase sobre u
 **Desafio do dia:**  
 <Sugira uma ação prática para o usuário se aproximar de Jesus hoje, de forma simples e direta.>
 
+Exemplo de entrada: Me sinto cansado e sem direção.
+Exemplo de saída:
+**Palavra de Jesus:**  
+"Vinde a mim todos os cansados e sobrecarregados, e eu vos aliviarei." (Mateus 11:28)
+
+**Reflexão:**  
+Jesus te convida a descansar nEle, entregando sua ansiedade e buscando Sua orientação para sua vida.
+
+**Oração:**  
+Senhor Jesus, eu entrego meu cansaço e minhas dúvidas a Ti. Guia meus passos e renova minhas forças. Amém.
+
+**Desafio do dia:**  
+Separe 5 minutos para orar e pedir direção a Jesus.
+
 Agora gere a mensagem para o sentimento: "{feeling}".
 Responda sempre em português, usando o formato acima.
 """
     try:
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        response = openai.ChatCompletion.create(
+        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=500,
             temperature=0.7,
         )
-        return response['choices'][0]['message']['content']
+        return response.choices[0].message.content
     except Exception as e:
         return f"Erro ao gerar mensagem: {str(e)}"
-
-# Interface principal
-feeling = st.text_input("Como você está se sentindo hoje?")
 
 if st.button("Gerar devocional"):
     if feeling.strip() == "":
         st.warning("Por favor, digite como você está se sentindo.")
     else:
-        with st.spinner("Gerando sua conversa com Jesus..."):
-            devotional = generate_cached_devotional(feeling.lower().strip())
-            st.markdown(devotional)
+        devotional = generate_devotional(feeling)
+        st.markdown(devotional)
 
 st.markdown("<hr>", unsafe_allow_html=True)
 st.caption("Feito com ❤️ usando Streamlit & OpenAI")
-
 
 
