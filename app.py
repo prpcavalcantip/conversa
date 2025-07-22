@@ -2,12 +2,70 @@ import streamlit as st
 import os
 import openai
 
-st.set_page_config(page_title="Minha Conversa com Jesus", page_icon=":pray:")
+st.set_page_config(
+    page_title="Minha Conversa com Jesus",
+    page_icon="🙏",
+    layout="centered",
+    initial_sidebar_state="auto"
+)
 
-st.title("Devocional de hoje")
-st.write("Digite como você está se sentindo e receba uma mensagem devocional cristã personalizada.")
+# Estilo customizado com CSS
+st.markdown("""
+    <style>
+        .main-container {
+            background-color: #f7fafc;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin-top: 2rem;
+        }
+        .title {
+            font-size: 2.7rem;
+            text-align: center;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 2.5rem;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-top: 3rem;
+        }
+        .stTextInput > label {
+            font-weight: bold;
+            font-size: 1.08rem;
+            color: #2d3748;
+        }
+        .stButton > button {
+            background-color: #3182ce !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 0.5rem 1.5rem !important;
+            font-size: 1.09rem !important;
+        }
+        .response-box {
+            background-color: #edf2f7;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 12px rgba(49, 130, 206, 0.09);
+            font-size: 1.12rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-feeling = st.text_input("Como você está se sentindo hoje?")
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
+st.markdown('<div class="title">🙏 Minha Conversa com Jesus</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Receba uma mensagem devocional cristã personalizada.<br>Digite como você está se sentindo hoje.</div>', unsafe_allow_html=True)
+
+feeling = st.text_input("Como você está se sentindo?", max_chars=100)
 
 def generate_devotional(feeling):
     prompt = f"""
@@ -31,7 +89,7 @@ Responda sempre em português.
     try:
         client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4-1106-nano",  # Ou o modelo que você preferir
             messages=[{"role": "user", "content": prompt}],
             max_tokens=350,
             temperature=0.7,
@@ -40,10 +98,15 @@ Responda sempre em português.
     except Exception as e:
         return f"Erro ao gerar mensagem: {str(e)}"
 
-if st.button("Gerar devocional"):
+if st.button("💬 Gerar devocional"):
     if feeling.strip() == "":
         st.warning("Por favor, digite como você está se sentindo.")
     else:
+        devotional = generate_devotional(feeling)
+        st.markdown(f'<div class="response-box">{devotional}</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">Feito com ❤️ usando Streamlit & OpenAI</div>', unsafe_allow_html=True)
         devotional = generate_devotional(feeling)
         st.markdown(devotional)
 
