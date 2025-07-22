@@ -36,7 +36,6 @@ Você é um assistente espiritual cristão. Sempre que receber uma frase sobre u
 Agora gere a mensagem para o sentimento: "{feeling}".
 Responda sempre em português, usando o formato acima.
 """
-
     try:
         openai.api_key = os.getenv("OPENAI_API_KEY")
         response = openai.ChatCompletion.create(
@@ -47,6 +46,21 @@ Responda sempre em português, usando o formato acima.
         )
         return response['choices'][0]['message']['content']
     except Exception as e:
-        return f"Erro ao gerar mensagem: {
+        return f"Erro ao gerar mensagem: {str(e)}"
+
+# Interface principal
+feeling = st.text_input("Como você está se sentindo hoje?")
+
+if st.button("Gerar devocional"):
+    if feeling.strip() == "":
+        st.warning("Por favor, digite como você está se sentindo.")
+    else:
+        with st.spinner("Gerando sua conversa com Jesus..."):
+            devotional = generate_cached_devotional(feeling.lower().strip())
+            st.markdown(devotional)
+
+st.markdown("<hr>", unsafe_allow_html=True)
+st.caption("Feito com ❤️ usando Streamlit & OpenAI")
+
 
 
