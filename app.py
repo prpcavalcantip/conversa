@@ -1,4 +1,4 @@
-mport streamlit as st
+Import streamlit as st
 import os
 import openai
 
