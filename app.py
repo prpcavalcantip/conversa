@@ -39,13 +39,22 @@ if st.button("📝 Assinar Agora") and email:
             "notification_url": "https://seusite.com/webhook"  # Para avisos
         })
         
-        # Mostra o link de pagamento
-        st.success("✅ Pronto! Clique no link abaixo para finalizar:")
-        st.markdown(f"[Ir para o Pagamento]({assinatura['response']['init_point']})", 
-                   unsafe_allow_html=True)
+        # Verifica se o 'init_point' está na resposta e exibe o link de pagamento
+        init_point = assinatura.get('response', {}).get('init_point')
+        if init_point:
+            st.success("✅ Pronto! Clique no link abaixo para finalizar:")
+            st.markdown(f"[Ir para o Pagamento]({init_point})", unsafe_allow_html=True)
+        else:
+            st.error("❌ Ocorreu um erro ao gerar o link de pagamento.")
+            st.info(f"Detalhes da resposta do Mercado Pago: {assinatura.get('response')}")
         
     except Exception as e:
         st.error(f"❌ Ocorreu um erro: {str(e)}")
+        st.info("Por favor, tente novamente ou entre em contato com nosso suporte.")
+
+# Rodapé
+st.markdown("---")
+st.write("Dúvidas? Entre em contato: contato@seusite.com")
         st.info("Por favor, tente novamente ou entre em contato com nosso suporte.")
 
 # Rodapé
