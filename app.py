@@ -1,118 +1,112 @@
 import streamlit as st
+import openai
+import os
 import datetime
-import re
 import requests
 
-# -------------- CONFIGURAÇÃO DA PÁGINA --------------
-st.set_page_config(
-    page_title="Minha Conversa com Jesus",
-    layout="centered",
-    page_icon="✝️"
-)
+# Chaves e tokens
+openai.api_key = st.secrets["OPENAI_API_KEY"]
+ACCESS_TOKEN = "SUA_CHAVE_DE_ACESSO_DO_MERCADO_PAGO"
+LINK_ASSINATURA = "https://www.mercadopago.com.br/subscriptions"
 
-# -------------- CONFIG MERCADO PAGO --------------
-ACCESS_TOKEN = "SEU_ACCESS_TOKEN_AQUI"  # Substitua pelo seu token
-LINK_ASSINATURA = "https://mpago.la/2g1Abc"  # Substitua pelo seu link real de assinatura
-
-# -------------- FUNÇÃO PARA VERIFICAR ASSINATURA --------------
+# Função para verificar assinatura
+@st.cache_data(ttl=600)
 def verificar_assinatura_por_email(email):
     url = "https://api.mercadopago.com/preapproval/search"
-    headers = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
-    params = {"q": email}
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}"
+    }
+    params = {
+        "status": "authorized",
+        "limit": 100
+    }
     try:
         response = requests.get(url, headers=headers, params=params)
         if response.status_code == 200:
             results = response.json().get("results", [])
             for assinatura in results:
-                if assinatura["payer_email"] == email and assinatura["status"] == "authorized":
+                if assinatura.get("payer_email") == email:
                     return True
         return False
     except Exception as e:
         st.error("Erro ao verificar assinatura: " + str(e))
         return False
 
-# -------------- CSS PERSONALIZADO --------------
-st.markdown("""<style>body {background-color: #e9f2fa !important;} ...</style>""", unsafe_allow_html=True)
+# Função para salvar histórico
+def salvar_historico(usuario, mensagem):
+    filename = f"historico_{usuario}.txt"
+    with open(filename, "a") as f:
+        f.write(f"{datetime.datetime.now().isoformat()} - {mensagem}\n")
 
-# -------------- MENSAGEM DE BOAS-VINDAS --------------
-st.markdown("""<div style='text-align: center; margin-top: 20px;'>...</div>""", unsafe_allow_html=True)
+# Função para carregar histórico
+def carregar_historico(usuario):
+    filename = f"historico_{usuario}.txt"
+    if os.path.exists(filename):
+        with open(filename, "r") as f:
+            return f.read()
+    return ""
 
-st.info("Em caso de dúvidas, fale com nosso suporte pelo WhatsApp:")
-st.markdown("<a href='https://wa.me/5581998311898'>81 99831-1898</a>", unsafe_allow_html=True)
+# Função para gerar mensagem
+def gerar_mensagem(mensagem_usuario):
+    prompt = f"Sou Jesus respondendo a um devocional. Mensagem do usuário: '{mensagem_usuario}'. Minha resposta:"
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Você é Jesus respondendo mensagens devocionais."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Erro ao gerar mensagem: {str(e)}"
 
-st.markdown("---")
-
-# -------------- AUTENTICAÇÃO COM API DO MERCADO PAGO --------------
-if "usuario_logado" not in st.session_state:
-    st.session_state["usuario_logado"] = None
+# Formulário de login
 
 def login_form():
-    st.markdown("<div class='title-div'><h3 style='text-align:center;'>Área de Login</h3></div>", unsafe_allow_html=True)
-    email = st.text_input("E-mail")
-    if st.button("Entrar"):
-        if verificar_assinatura_por_email(email):
-            st.session_state["usuario_logado"] = email
-            st.success("Assinatura verificada. Bem-vindo!")
-        else:
-            st.error("Assinatura não encontrada. Assine para acessar.")
-            st.markdown(f"<a href='{LINK_ASSINATURA}' target='_blank'><button>Assinar agora</button></a>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
+    st.markdown(f"<a href='{LINK_ASSINATURA}' target='_blank'><button style='background-color:#28a745; color:white; padding:12px 24px; font-size:16px; border:none; border-radius:8px;'>💖 Assinar agora</button></a>", unsafe_allow_html=True)
+    st.markdown("</div><br>", unsafe_allow_html=True)
 
-if not st.session_state["usuario_logado"]:
-    login_form()
-    st.stop()
+    with st.container():
+        st.markdown("<div style='background-color:#f0f2f6; padding: 20px; border-radius: 10px;'>", unsafe_allow_html=True)
+        st.subheader("🔐 Acesso ao devocional")
+        email = st.text_input("Digite seu e-mail para verificar sua assinatura:")
+        if st.button("Entrar"):
+            if verificar_assinatura_por_email(email):
+                st.session_state["usuario_logado"] = email
+                st.success("Assinatura verificada. Bem-vindo!")
+            else:
+                st.error("Assinatura não encontrada. Assine para acessar.")
 
-# -------------- ÁREA EXCLUSIVA PARA USUÁRIOS LOGADOS --------------
-st.markdown("<div class='title-div'><h1 style='text-align: center;'>Minha Conversa com Jesus</h1></div>", unsafe_allow_html=True)
-st.markdown("<div class='input-div'>Como você está se sentindo hoje?</div>", unsafe_allow_html=True)
-sentimento = st.text_input("", max_chars=120)
+        st.markdown("<br><div style='text-align:center;'>", unsafe_allow_html=True)
+        st.markdown(f"<a href='{LINK_ASSINATURA}' target='_blank'><button style='background-color:#007bff; color:white; padding:10px 20px; font-size:14px; border:none; border-radius:5px;'>Assinar agora</button></a>", unsafe_allow_html=True)
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
-def formatar_negrito(texto):
-    return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
+# Interface principal do app
+def app():
+    st.markdown("""
+        <div style='text-align: center; padding: 10px;'>
+            <h1 style='color:#2c3e50;'>🙏 Minha Conversa com Jesus</h1>
+            <p style='color:#7f8c8d;'>Receba uma resposta devocional baseada nas palavras de Jesus.</p>
+        </div>
+    """, unsafe_allow_html=True)
 
-def formatar_sugestoes(texto):
-    linhas = texto.split('\n')
-    novas_linhas = []
-    for linha in linhas:
-        if linha.strip().startswith('•'):
-            novas_linhas.append(f"<div class='suggestion'>{linha.strip()}</div>")
-        else:
-            novas_linhas.append(linha)
-    return "\n".join(novas_linhas)
+    if "usuario_logado" not in st.session_state:
+        login_form()
+        return
 
-def gerar_devocional(sentimento):
-    return f"""**Palavra de Jesus:**  \n\"Vinde a mim...\" (Mateus 11:28)\n\n**Reflexão:**  \n...\n\n**Oração:**  \n...\n\n**Sugestões práticas:**  \n• Separe cinco minutos...  \n• Escreva uma mensagem..."""
+    usuario = st.session_state["usuario_logado"]
+    mensagem_usuario = st.text_area("Como você está se sentindo hoje?")
+    if st.button("Gerar devocional"):
+        resposta = gerar_mensagem(mensagem_usuario)
+        st.write("**📜 Resposta de Jesus:**")
+        st.markdown(f"<div style='background-color:#eaf2f8; padding: 15px; border-radius: 10px;'>{resposta}</div>", unsafe_allow_html=True)
+        salvar_historico(usuario, f"Você: {mensagem_usuario}\nJesus: {resposta}")
 
-def salvar_historico(email, sentimento, devocional):
-    try:
-        with open(f"historico_{email}.txt", "a", encoding="utf-8") as f:
-            data = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-            f.write(f"\n---\n{data}\nSentimento: {sentimento}\n{devocional}\n")
-    except:
-        st.warning("Não foi possível salvar o histórico.")
+    st.subheader("🕘 Seu histórico de conversas")
+    historico = carregar_historico(usuario)
+    st.text_area("", value=historico, height=200)
 
-if st.button("Gerar Devocional") and sentimento:
-    with st.spinner('Gerando seu devocional...'):
-        devocional = gerar_devocional(sentimento)
-        devocional_formatado = formatar_sugestoes(formatar_negrito(devocional))
-        st.markdown(f"<div class='custom-card'>{devocional_formatado.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
-        salvar_historico(st.session_state["usuario_logado"], sentimento, devocional)
-
-def exibir_historico(email):
-    try:
-        with open(f"historico_{email}.txt", "r", encoding="utf-8") as f:
-            blocos = f.read().split("---")
-            st.markdown("<h4 style='color:#205081'>Histórico</h4>", unsafe_allow_html=True)
-            for bloco in reversed(blocos[-5:]):
-                if bloco.strip():
-                    st.markdown(f"<div class='historico-card'>{bloco.strip().replace(chr(10),'<br>')}</div>", unsafe_allow_html=True)
-    except FileNotFoundError:
-        st.info("Nenhum histórico encontrado.")
-
-if st.checkbox("Ver meu histórico"):
-    exibir_historico(st.session_state["usuario_logado"])
-
-st.markdown("<div style='text-align: center;'>© 2025 Minha Conversa com Jesus</div>", unsafe_allow_html=True)
-
-
-
-    
+if __name__ == "__main__":
+    app()
