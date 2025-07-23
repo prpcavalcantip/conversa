@@ -7,13 +7,21 @@ st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", la
 
 # Título centralizado
 st.markdown(
-    "<h1 style='text-align: center; font-size: 2.5em; margin-bottom: 30px;'>Minha Conversa com Jesus</h1>",
+    """
+    <h1 style='text-align: center; font-size: 2.5em; margin-bottom: 30px;'>
+        Minha Conversa com Jesus
+    </h1>
+    """,
     unsafe_allow_html=True
 )
 
 # Campo de entrada para o usuário
 st.markdown(
-    "<div style='text-align: center; font-size: 1.25em;'>Como você está se sentindo hoje?</div>",
+    """
+    <div style='text-align: center; font-size: 1.25em; margin-bottom: 20px;'>
+        Como você está se sentindo hoje?
+    </div>
+    """,
     unsafe_allow_html=True
 )
 feeling = st.text_input("", max_chars=120)
@@ -28,15 +36,20 @@ Você é um assistente espiritual cristão. Quando alguém compartilha como est�
 3. Oração: Escreva uma oração personalizada, baseada no sentimento e na Palavra escolhida, convidando Jesus para a situação da pessoa.
 4. Sugestões práticas para o dia: Ofereça pelo menos duas sugestões simples, concretas e atuais para a pessoa viver aquela Palavra de Jesus no dia de hoje (por exemplo: separar um tempo de silêncio, enviar uma mensagem para alguém, anotar motivos de gratidão, etc).
 
-Seja sempre acolhedor, empático e positivo. Use uma linguagem acessível e frases claras.
+Formate a resposta em blocos bem separados e com títulos em negrito, assim:
 
-Exemplo:
-- Palavra de Jesus: "Vinde a mim todos os cansados e sobrecarregados, e eu vos aliviarei." (Mateus 11:28)
-- Reflexão: Jesus conhece profundamente o seu coração e entende o peso que você está carregando. Suas palavras são um convite a entregar todas as preocupações e buscar nEle o verdadeiro descanso. Mesmo nos dias mais exaustivos, Jesus permanece ao seu lado, pronto para renovar suas forças e acalmar sua mente. Confie que Ele se importa com cada detalhe da sua vida e deseja aliviar seu fardo.
-- Oração: Senhor Jesus, reconheço meu cansaço e minha limitação. Entrego a Ti tudo o que tem pesado sobre mim e peço que me envolva com Tua paz e amor. Ajuda-me a confiar mais em Ti a cada dia. Amém.
-- Sugestões práticas para o dia:
-  • Separe 5 minutos para fazer uma oração silenciosa entregando suas preocupações a Jesus.
-  • Escreva uma lista de fardos que deseja entregar e, ao final do dia, agradeça por cada um deles.
+**Palavra de Jesus:**  
+<versículo>
+
+**Reflexão:**  
+<reflexão>
+
+**Oração:**  
+<oração>
+
+**Sugestões práticas para o dia:**  
+• <sugestão 1>  
+• <sugestão 2>
 
 Agora gere o devocional para: "{sentimento}"
 """
@@ -64,16 +77,22 @@ if feeling:
         devocional = gerar_devocional(feeling)
         # Exibe o devocional formatado, centralizado e limpo
         st.markdown(
-            f"<div style='background-color: #f9fafb; border-radius: 16px; padding: 24px; margin-top: 24px; "
-            f"text-align: center; font-size: 1.1em;'>"
-            f"{devocional.replace(chr(10), '<br>')}"
-            f"</div>", unsafe_allow_html=True
+            f"""
+            <div style='background-color: #f9fafb; border-radius: 16px; padding: 24px; margin-top: 24px; 
+            text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; font-size: 1.12em; line-height: 1.6;'>
+            {devocional.replace(chr(10), '<br>')}
+            </div>
+            """,
+            unsafe_allow_html=True
         )
         salvar_historico(feeling, devocional)
 
 # Rodapé
 st.markdown(
-    "<div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>"
-    "© 2025 Minha Conversa com Jesus | Feito com Streamlit"
-    "</div>", unsafe_allow_html=True
+    """
+    <div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>
+        © 2025 Minha Conversa com Jesus | Feito com Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True
 )
