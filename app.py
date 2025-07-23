@@ -6,12 +6,13 @@ import requests
 
 # Chaves e tokens
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-ACCESS_TOKEN = st.secrets["MP_ACCESS_TOKEN"]  # Token seguro
+ACCESS_TOKEN = st.secrets["MP_ACCESS_TOKEN"]
 
-# ID do plano já criado no Mercado Pago
 PLAN_ID = "54796041"
 
-# Função para verificar assinatura
+if "usuario_logado" not in st.session_state:
+    st.session_state["usuario_logado"] = None
+
 @st.cache_data(ttl=600)
 def verificar_assinatura_por_email(email):
     url = "https://api.mercadopago.com/preapproval/search"
@@ -34,9 +35,8 @@ def verificar_assinatura_por_email(email):
         st.error("Erro ao verificar assinatura: " + str(e))
         return False
 
-# Função para gerar link de checkout com plano fixo
 def gerar_link_checkout(email):
-    url = "https://api.mercadopago.com/preapproval"  # Assinatura recorrente
+    url = "https://api.mercadopago.com/preapproval"
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json"
@@ -58,13 +58,11 @@ def gerar_link_checkout(email):
         st.error("Erro na requisição de checkout: " + str(e))
         return None
 
-# Função para salvar histórico
 def salvar_historico(usuario, mensagem):
     filename = f"historico_{usuario}.txt"
     with open(filename, "a") as f:
         f.write(f"{datetime.datetime.now().isoformat()} - {mensagem}\n")
 
-# Função para carregar histórico
 def carregar_historico(usuario):
     filename = f"historico_{usuario}.txt"
     if os.path.exists(filename):
@@ -72,7 +70,6 @@ def carregar_historico(usuario):
             return f.read()
     return ""
 
-# Função para gerar mensagem
 def gerar_mensagem(mensagem_usuario):
     prompt = f"Sou Jesus respondendo a um devocional. Mensagem do usuário: '{mensagem_usuario}'. Minha resposta:"
     try:
@@ -87,7 +84,6 @@ def gerar_mensagem(mensagem_usuario):
     except Exception as e:
         return f"Erro ao gerar mensagem: {str(e)}"
 
-# Formulário de login
 def login_form():
     st.markdown("""
         <div style='text-align:center; margin-bottom:20px;'>
@@ -105,31 +101,37 @@ def login_form():
     st.divider()
     st.subheader("Login")
     if st.button("Entrar"):
-        if verificar_assinatura_por_email(email):
+        if email and verificar_assinatura_por_email(email):
             st.session_state["usuario_logado"] = email
             st.success("Assinatura verificada. Bem-vindo!")
         else:
-            st.error("Assinatura não encontrada. Assine para acessar.")
+            st.error("Assinatura não encontrada ou e-mail vazio. Assine para acessar.")
 
-# Interface principal do app
 def app():
     st.title("🙏 Minha Conversa com Jesus")
 
-    if "usuario_logado" not in st.session_state:
+    if not st.session_state["usuario_logado"]:
         login_form()
         return
 
     usuario = st.session_state["usuario_logado"]
     mensagem_usuario = st.text_area("Como você está se sentindo hoje?")
+
     if st.button("Gerar devocional"):
-        resposta = gerar_mensagem(mensagem_usuario)
-        st.write("**Resposta de Jesus:**")
-        st.write(resposta)
-        salvar_historico(usuario, f"Você: {mensagem_usuario}\nJesus: {resposta}")
+        if mensagem_usuario.strip():
+            resposta = gerar_mensagem(mensagem_usuario)
+            st.write("**Resposta de Jesus:**")
+            st.write(resposta)
+            salvar_historico(usuario, f"Você: {mensagem_usuario}\nJesus: {resposta}")
+        else:
+            st.warning("Por favor, escreva como está se sentindo.")
 
     st.subheader("Histórico")
     historico = carregar_historico(usuario)
-    st.text_area("", value=historico, height=200)
+    if historico:
+        st.text_area("", value=historico, height=200, disabled=True)
+    else:
+        st.info("Nenhum histórico encontrado ainda.")
 
 if __name__ == "__main__":
     app()
