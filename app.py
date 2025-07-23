@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 import datetime
 import re
 
@@ -85,25 +84,6 @@ st.markdown("""
             text-decoration: none;
             font-weight: 700;
         }
-        .assinatura-btn {
-            background-color: #3483FA;
-            color: #fff !important;
-            padding: 14px 32px;
-            text-decoration: none;
-            border-radius: 8px;
-            display: inline-block;
-            font-size: 1.15em;
-            font-weight: 600;
-            font-family: Arial, sans-serif;
-            transition: background 0.3s;
-            box-shadow: 0 2px 8px rgba(52,131,250,0.1);
-            border: none;
-            margin: 0 auto 20px auto;
-        }
-        .assinatura-btn:hover {
-            background-color: #2a68c8;
-            color: #fff !important;
-        }
         .historico-card {
             background: #fff;
             border: 1px solid #b3c6e0;
@@ -116,27 +96,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# -------------- MENSAGEM DE BOAS-VINDAS E BOTÃO DE ASSINATURA --------------
+# -------------- MENSAGEM DE BOAS-VINDAS --------------
 st.markdown("""
 <div style='text-align: center; margin-top: 20px; margin-bottom: 10px;'>
     <h2 style='color: #205081; font-family: Arial, sans-serif;'>Bem-vindo ao Minha Conversa com Jesus!</h2>
     <p style='font-size: 1.1em; color: #333; margin-bottom: 30px;'>
         É uma alegria ter você aqui.<br>
         Viva um tempo de inspiração, reflexão e conexão com a Palavra de Jesus.<br>
-        Para acessar todo o conteúdo, faça sua assinatura anual abaixo:
     </p>
-    <a href="https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=dadca597a91f47be81a6133103eacfa5" 
-       name="MP-payButton" 
-       class="assinatura-btn"
-       target="_blank">
-      Assinar agora
-    </a>
 </div>
 """, unsafe_allow_html=True)
 
 # SUPORTE WHATSAPP
 st.info(
-    "Após o pagamento, seu acesso ao conteúdo exclusivo será liberado automaticamente ou após confirmação.\n\n"
     "Em caso de dúvidas, fale com nosso suporte pelo WhatsApp:"
 )
 st.markdown(
@@ -176,42 +148,7 @@ if not st.session_state["usuario_logado"]:
     login_form()
     st.stop()
 
-# -------------- CONTROLE DE ASSINATURA --------------
-ANO = 365  # duração da assinatura em dias
-
-def verificar_pagamento(email):
-    try:
-        with open("assinantes.txt", "r", encoding="utf-8") as f:
-            assinantes = [linha.strip().split(",") for linha in f.readlines()]
-            for registro in assinantes:
-                if registro[0].lower() == email.lower():
-                    data_expiracao = datetime.datetime.strptime(registro[1], "%Y-%m-%d")
-                    if data_expiracao > datetime.datetime.now():
-                        return True
-        return False
-    except FileNotFoundError:
-        return False
-
-def registrar_pagamento(email):
-    data_expiracao = (datetime.datetime.now() + datetime.timedelta(days=ANO)).strftime("%Y-%m-%d")
-    with open("assinantes.txt", "a", encoding="utf-8") as f:
-        f.write(f"{email},{data_expiracao}\n")
-
-if "assinante" not in st.session_state:
-    st.session_state["assinante"] = False
-
-if not st.session_state["assinante"]:
-    st.markdown("<div class='input-div'>Para acessar o conteúdo, confirme sua assinatura!</div>", unsafe_allow_html=True)
-    email_pagamento = st.text_input("E-mail usado no pagamento:")
-    if st.button("Verificar pagamento"):
-        if verificar_pagamento(email_pagamento):
-            st.session_state["assinante"] = True
-            st.success("Assinatura confirmada! Aproveite o app.")
-        else:
-            st.warning("Assinatura não encontrada ou expirada. Aguarde a confirmação ou entre em contato.")
-    st.stop()
-
-# -------------- ÁREA EXCLUSIVA PARA ASSINANTES --------------
+# -------------- ÁREA EXCLUSIVA PARA USUÁRIOS LOGADOS --------------
 
 # Título
 st.markdown("""
@@ -303,3 +240,4 @@ st.markdown(
     "</div>",
     unsafe_allow_html=True
 )
+    
