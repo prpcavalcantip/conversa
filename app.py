@@ -135,12 +135,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # SUPORTE WHATSAPP
-st.info("""
-Após o pagamento, seu acesso ao conteúdo exclusivo será liberado automaticamente ou após confirmação.
-
-Em caso de dúvidas, fale com nosso suporte pelo WhatsApp:  
-📱 <a href="https://wa.me/5581998311898" class="whatsapp-link" target="_blank">81 99831-1898</a>
-""", icon="💬", unsafe_allow_html=True)
+st.info(
+    "Após o pagamento, seu acesso ao conteúdo exclusivo será liberado automaticamente ou após confirmação.\n\n"
+    "Em caso de dúvidas, fale com nosso suporte pelo WhatsApp:"
+)
+st.markdown(
+    "📱 <a href='https://wa.me/5581998311898' class='whatsapp-link' target='_blank'>81 99831-1898</a>",
+    unsafe_allow_html=True
+)
 
 st.markdown("---")
 
@@ -301,3 +303,4 @@ st.markdown(
     "</div>",
     unsafe_allow_html=True
 )
+
