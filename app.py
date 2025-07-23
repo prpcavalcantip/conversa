@@ -1,137 +1,32 @@
 import streamlit as st
-import openai
-import os
-import datetime
-import requests
 
-# Chaves e tokens
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-ACCESS_TOKEN = st.secrets["MP_ACCESS_TOKEN"]
+st.set_page_config(page_title="Assinatura - Minha Conversa com Jesus", page_icon="🙏")
 
-PLAN_ID = "54796041"
+st.title("🙏 Minha Conversa com Jesus")
+st.write("Para acessar o conteúdo completo, clique no botão abaixo e faça sua assinatura:")
 
-if "usuario_logado" not in st.session_state:
-    st.session_state["usuario_logado"] = None
+checkout_url = "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=dadca597a91f47be81a6133103eacfa5"
 
-@st.cache_data(ttl=600)
-def verificar_assinatura_por_email(email):
-    url = "https://api.mercadopago.com/preapproval/search"
-    headers = {
-        "Authorization": f"Bearer {ACCESS_TOKEN}"
-    }
-    params = {
-        "status": "authorized",
-        "limit": 100
-    }
-    try:
-        response = requests.get(url, headers=headers, params=params)
-        if response.status_code == 200:
-            results = response.json().get("results", [])
-            for assinatura in results:
-                if assinatura.get("payer_email") == email:
-                    return True
-        return False
-    except Exception as e:
-        st.error("Erro ao verificar assinatura: " + str(e))
-        return False
+st.markdown(f"""
+    <a href="{checkout_url}" name="MP-payButton" class="blue-button" target="_blank">Assinar agora</a>
+    <style>
+    .blue-button {{
+        background-color: #3483FA;
+        color: white;
+        padding: 12px 28px;
+        text-decoration: none;
+        border-radius: 6px;
+        display: inline-block;
+        font-size: 18px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        font-family: Arial, sans-serif;
+        margin-top: 24px;
+    }}
+    .blue-button:hover {{
+        background-color: #2a68c8;
+    }}
+    </style>
+""", unsafe_allow_html=True)
 
-def gerar_link_checkout(email):
-    url = "https://api.mercadopago.com/preapproval"
-    headers = {
-        "Authorization": f"Bearer {ACCESS_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "preapproval_plan_id": PLAN_ID,
-        "payer_email": email,
-        "back_url": "https://conversa-pcstpleylurpnhtwgamfkb.streamlit.app/",
-        "reason": "Assinatura anual - Minha Conversa com Jesus"
-    }
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code in (200, 201):
-            return response.json()["init_point"]
-        else:
-            st.error(f"Erro ao gerar link de checkout: {response.status_code} - {response.text}")
-            return None
-    except Exception as e:
-        st.error("Erro na requisição de checkout: " + str(e))
-        return None
-
-def salvar_historico(usuario, mensagem):
-    filename = f"historico_{usuario}.txt"
-    with open(filename, "a") as f:
-        f.write(f"{datetime.datetime.now().isoformat()} - {mensagem}\n")
-
-def carregar_historico(usuario):
-    filename = f"historico_{usuario}.txt"
-    if os.path.exists(filename):
-        with open(filename, "r") as f:
-            return f.read()
-    return ""
-
-def gerar_mensagem(mensagem_usuario):
-    prompt = f"Sou Jesus respondendo a um devocional. Mensagem do usuário: '{mensagem_usuario}'. Minha resposta:"
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Você é Jesus respondendo mensagens devocionais."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return response.choices[0].message.content.strip()
-    except Exception as e:
-        return f"Erro ao gerar mensagem: {str(e)}"
-
-def login_form():
-    st.markdown("""
-        <div style='text-align:center; margin-bottom:20px;'>
-            <h2>Assine para acessar o app</h2>
-        </div>
-    """, unsafe_allow_html=True)
-
-    email = st.text_input("Digite seu e-mail para verificar ou criar sua assinatura:")
-
-    if email:
-        checkout_url = gerar_link_checkout(email)
-        if checkout_url:
-            st.markdown(f"<div style='text-align:center; margin-bottom:20px;'><a href='{checkout_url}' target='_blank'><button style='background-color:#007bff; color:white; padding:12px 24px; font-size:16px; border:none; border-radius:8px;'>Assinar agora</button></a></div>", unsafe_allow_html=True)
-
-    st.divider()
-    st.subheader("Login")
-    if st.button("Entrar"):
-        if email and verificar_assinatura_por_email(email):
-            st.session_state["usuario_logado"] = email
-            st.success("Assinatura verificada. Bem-vindo!")
-        else:
-            st.error("Assinatura não encontrada ou e-mail vazio. Assine para acessar.")
-
-def app():
-    st.title("🙏 Minha Conversa com Jesus")
-
-    if not st.session_state["usuario_logado"]:
-        login_form()
-        return
-
-    usuario = st.session_state["usuario_logado"]
-    mensagem_usuario = st.text_area("Como você está se sentindo hoje?")
-
-    if st.button("Gerar devocional"):
-        if mensagem_usuario.strip():
-            resposta = gerar_mensagem(mensagem_usuario)
-            st.write("**Resposta de Jesus:**")
-            st.write(resposta)
-            salvar_historico(usuario, f"Você: {mensagem_usuario}\nJesus: {resposta}")
-        else:
-            st.warning("Por favor, escreva como está se sentindo.")
-
-    st.subheader("Histórico")
-    historico = carregar_historico(usuario)
-    if historico:
-        st.text_area("", value=historico, height=200, disabled=True)
-    else:
-        st.info("Nenhum histórico encontrado ainda.")
-
-if __name__ == "__main__":
-    app()
+st.info("Após realizar a assinatura, retorne a este aplicativo e faça login normalmente.")
