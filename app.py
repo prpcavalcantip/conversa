@@ -297,7 +297,7 @@ if st.checkbox("Ver meu histórico"):
 # Rodapé
 st.markdown(
     "<div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>"
-    "© 2025 Minha Conversa com Jesus | Feito com ❤️ pelo Pastor Paulo Cavalcanti
+    "© 2025 Minha Conversa com Jesus | Feito com ❤️ pelo Pastor Paulo Cavalcanti"
     "</div>",
     unsafe_allow_html=True
 )
