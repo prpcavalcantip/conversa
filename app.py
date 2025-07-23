@@ -4,8 +4,8 @@ import mercadopago
 # ======================================
 # 🔑 CONFIGURAÇÕES - SUBSTITUA AQUI!
 # ======================================
-ACCESS_TOKEN = "APP_USR-9f409612-b346-4437-a1d7-33589ad29133"  # Ex: "APP_USR-1234567890..."
-PLANO_ID = "dadca597a91f47be81a6133103eacfa5"         # Ex: "dadca597a91f47be81a6133103eacfa5"
+ACCESS_TOKEN = "APP_USR-9f409612-b346-4437-a1d7-33589ad29133"  # Exemplo: "APP_USR-1234567890..."
+PLANO_ID = "dadca597a91f47be81a6133103eacfa5"                 # Exemplo: "dadca597a91f47be81a6133103eacfa5"
 # ======================================
 
 # Inicializa a conexão com o Mercado Pago
@@ -38,7 +38,7 @@ if st.button("📝 Assinar Agora") and email:
             "back_url": "https://seusite.com/obrigado",  # Página após pagamento
             "notification_url": "https://seusite.com/webhook"  # Para avisos
         })
-        
+
         # Verifica se o 'init_point' está na resposta e exibe o link de pagamento
         init_point = assinatura.get('response', {}).get('init_point')
         if init_point:
@@ -47,14 +47,8 @@ if st.button("📝 Assinar Agora") and email:
         else:
             st.error("❌ Ocorreu um erro ao gerar o link de pagamento.")
             st.info(f"Detalhes da resposta do Mercado Pago: {assinatura.get('response')}")
-        
     except Exception as e:
         st.error(f"❌ Ocorreu um erro: {str(e)}")
-        st.info("Por favor, tente novamente ou entre em contato com nosso suporte.")
-
-# Rodapé
-st.markdown("---")
-st.write("Dúvidas? Entre em contato: contato@seusite.com")
         st.info("Por favor, tente novamente ou entre em contato com nosso suporte.")
 
 # Rodapé
