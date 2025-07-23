@@ -3,23 +3,108 @@ import openai
 import os
 import re
 
-# Configuração do Streamlit
-st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
+# Cores suaves para o tema
+PRIMARY_BG = "#e9f2fa"
+CARD_BG = "#ffffff"
+CARD_BORDER = "#b3c6e0"
+PRIMARY_COLOR = "#205081"
+BUTTON_BG = "#205081"
+BUTTON_TEXT = "#fff"
+TEXT_COLOR = "#24292f"
+SUGGESTION_BG = "#f0f6fb"
 
-# Título centralizado
+# CSS customizado
+st.markdown(f"""
+    <style>
+    body {{
+        background-color: {PRIMARY_BG} !important;
+    }}
+    .main .block-container {{
+        background: {PRIMARY_BG} !important;
+        color: {TEXT_COLOR};
+    }}
+    .title-div {{
+        background: {CARD_BG};
+        border-radius: 18px;
+        padding: 18px 10px 12px 10px;
+        margin-bottom: 18px;
+        border: 1.5px solid {CARD_BORDER};
+        box-shadow: 0 2px 8px rgba(32,80,129,0.08);
+    }}
+    .input-div {{
+        text-align: center;
+        font-size: 1.25em;
+        margin-bottom: 20px;
+        color: {PRIMARY_COLOR};
+        font-weight: 500;
+    }}
+    .custom-card {{
+        background-color: {CARD_BG};
+        border: 1.5px solid {CARD_BORDER};
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 24px;
+        text-align: left;
+        max-width: 540px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1.13em;
+        line-height: 1.7;
+        color: {TEXT_COLOR};
+        box-shadow: 0 2px 10px rgba(32,80,129,0.06);
+    }}
+    .stTextInput > div > div > input {{
+        background-color: #f5faff;
+        border-radius: 8px;
+        border: 1.5px solid {CARD_BORDER};
+        font-size: 1.1em;
+    }}
+    .stButton button {{
+        color: {BUTTON_TEXT};
+        background: linear-gradient(90deg,{BUTTON_BG} 70%,#3e82c4 100%);
+        border: 0px;
+        border-radius: 8px;
+        padding: 0.6em 1.5em;
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-bottom: 10px;
+        transition: 0.2s;
+    }}
+    .stButton button:hover {{
+        filter: brightness(1.08);
+        border: 1.5px solid {PRIMARY_COLOR};
+    }}
+    strong {{
+        color: {PRIMARY_COLOR};
+        font-weight: 700;
+    }}
+    .suggestion {{
+        background: {SUGGESTION_BG};
+        border-left: 4px solid {PRIMARY_COLOR};
+        border-radius: 7px;
+        padding: 7px 15px 7px 14px;
+        margin: 6px 0 0 0;
+        font-size: 1em;
+    }}
+    </style>
+""", unsafe_allow_html=True)
+
+# Título centralizado em uma div estilizada
 st.markdown(
-    """
-    <h1 style='text-align: center; font-size: 2.5em; margin-bottom: 30px;'>
-        Minha Conversa com Jesus
-    </h1>
+    f"""
+    <div class='title-div'>
+        <h1 style='text-align: center; font-size: 2.5em; margin-bottom: 0; color: {PRIMARY_COLOR};'>
+            Minha Conversa com Jesus
+        </h1>
+    </div>
     """,
     unsafe_allow_html=True
 )
 
 # Campo de entrada para o usuário
 st.markdown(
-    """
-    <div style='text-align: center; font-size: 1.25em; margin-bottom: 20px;'>
+    f"""
+    <div class='input-div'>
         Como você está se sentindo hoje?
     </div>
     """,
@@ -30,6 +115,17 @@ feeling = st.text_input("", max_chars=120)
 def formatar_negrito(texto):
     # Substitui **texto** por <strong>texto</strong>
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
+
+def formatar_sugestoes(texto):
+    # Torna sugestões práticas mais destacadas
+    linhas = texto.split('\n')
+    novas_linhas = []
+    for linha in linhas:
+        if linha.strip().startswith('•'):
+            novas_linhas.append(f"<div class='suggestion'>{linha.strip()}</div>")
+        else:
+            novas_linhas.append(linha)
+    return "\n".join(novas_linhas)
 
 # Função para gerar o devocional via OpenAI (nova API)
 def gerar_devocional(sentimento):
@@ -81,10 +177,10 @@ if st.button("Gerar Devocional") and feeling:
     with st.spinner('Gerando seu devocional...'):
         devocional = gerar_devocional(feeling)
         devocional_formatado = formatar_negrito(devocional)
+        devocional_formatado = formatar_sugestoes(devocional_formatado)
         st.markdown(
             f"""
-            <div style='background-color: #f9fafb; border-radius: 16px; padding: 24px; margin-top: 24px; 
-            text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; font-size: 1.12em; line-height: 1.6;'>
+            <div class='custom-card'>
             {devocional_formatado.replace(chr(10), '<br>')}
             </div>
             """,
@@ -94,9 +190,13 @@ if st.button("Gerar Devocional") and feeling:
 
 # Rodapé
 st.markdown(
-    """
+    f"""
     <div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>
-        © 2025 Minha Conversa com Jesus | Feito com carinho pelo Pastor Paulo Cavalcanti
+        © 2025 Minha Conversa com Jesus | Feito com Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True
+)
     </div>
     """,
     unsafe_allow_html=True
