@@ -54,9 +54,7 @@ st.markdown(f"""
         box-shadow: 0 2px 10px rgba(32,80,129,0.06);
     }}
     .stTextInput > div > div > input {{
-        background-color: #f5faff;
-        border-radius: 8px;
-        border: 1.5px solid {CARD_BORDER};
+        /* Removido customizações problemáticas para mobile */
         font-size: 1.1em;
     }}
     .stButton button {{
@@ -90,6 +88,14 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Título
+st.set_page_config(
+    page_title="Minha Conversa com Jesus",
+    # Para favicon personalizado, coloque 'favicon.png' na pasta do app e descomente a linha abaixo:
+    # page_icon="favicon.png",
+    page_icon="✝️",
+    layout="centered"
+)
+
 st.markdown(
     f"""
     <div class='title-div'>
