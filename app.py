@@ -1,6 +1,7 @@
 import streamlit as st
 import openai
 import os
+import re
 
 # Configuração do Streamlit
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
@@ -26,6 +27,10 @@ st.markdown(
 )
 feeling = st.text_input("", max_chars=120)
 
+def formatar_negrito(texto):
+    # Substitui **texto** por <strong>texto</strong>
+    return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
+
 # Função para gerar o devocional via OpenAI (nova API)
 def gerar_devocional(sentimento):
     prompt = f"""
@@ -36,7 +41,7 @@ Você é um assistente espiritual cristão. Quando alguém compartilha como est�
 3. Oração: Escreva uma oração personalizada, baseada no sentimento e na Palavra escolhida, convidando Jesus para a situação da pessoa.
 4. Sugestões práticas para o dia: Ofereça pelo menos duas sugestões simples, concretas e atuais para a pessoa viver aquela Palavra de Jesus no dia de hoje (por exemplo: separar um tempo de silêncio, enviar uma mensagem para alguém, anotar motivos de gratidão, etc).
 
-Formate a resposta em blocos bem separados e com títulos em negrito, assim:
+Formate a resposta em blocos bem separados e com títulos marcados com **, assim:
 
 **Palavra de Jesus:**  
 <versículo>
@@ -71,16 +76,16 @@ def salvar_historico(sentimento, devocional):
     except Exception as e:
         st.warning("Não foi possível salvar o histórico.")
 
-# Quando o usuário envia o sentimento
-if feeling:
+# Botão para gerar devocional
+if st.button("Gerar Devocional") and feeling:
     with st.spinner('Gerando seu devocional...'):
         devocional = gerar_devocional(feeling)
-        # Exibe o devocional formatado, centralizado e limpo
+        devocional_formatado = formatar_negrito(devocional)
         st.markdown(
             f"""
             <div style='background-color: #f9fafb; border-radius: 16px; padding: 24px; margin-top: 24px; 
             text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; font-size: 1.12em; line-height: 1.6;'>
-            {devocional.replace(chr(10), '<br>')}
+            {devocional_formatado.replace(chr(10), '<br>')}
             </div>
             """,
             unsafe_allow_html=True
