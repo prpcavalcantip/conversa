@@ -3,7 +3,7 @@ import openai
 import os
 import re
 
-# Cores suaves para o tema
+# Paleta de cores suaves
 PRIMARY_BG = "#e9f2fa"
 CARD_BG = "#ffffff"
 CARD_BORDER = "#b3c6e0"
@@ -13,7 +13,7 @@ BUTTON_TEXT = "#fff"
 TEXT_COLOR = "#24292f"
 SUGGESTION_BG = "#f0f6fb"
 
-# CSS customizado
+# CSS customizado para interface amigável
 st.markdown(f"""
     <style>
     body {{
@@ -89,7 +89,7 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Título centralizado em uma div estilizada
+# Título
 st.markdown(
     f"""
     <div class='title-div'>
@@ -101,7 +101,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Campo de entrada para o usuário
+# Campo de entrada
 st.markdown(
     f"""
     <div class='input-div'>
@@ -190,13 +190,9 @@ if st.button("Gerar Devocional") and feeling:
 
 # Rodapé
 st.markdown(
-    f"""
+    """
     <div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>
         © 2025 Minha Conversa com Jesus | Feito com Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True
-)
     </div>
     """,
     unsafe_allow_html=True
