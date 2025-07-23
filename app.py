@@ -140,7 +140,7 @@ def login_form():
         if email in USUARIOS and USUARIOS[email] == senha:
             st.session_state["usuario_logado"] = email
             st.success("Login realizado com sucesso!")
-            st.experimental_rerun()
+            # st.experimental_rerun()  # Não use aqui!
         else:
             st.error("E-mail ou senha incorretos.")
 
@@ -240,4 +240,5 @@ st.markdown(
     "</div>",
     unsafe_allow_html=True
 )
+
     
