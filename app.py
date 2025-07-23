@@ -2,6 +2,7 @@ import streamlit as st
 import openai
 import os
 import re
+import datetime
 
 # Configuração da página
 st.set_page_config(
@@ -44,6 +45,49 @@ def login():
 
 if not st.session_state["usuario_logado"]:
     login()
+    st.stop()
+# --------------------------
+
+# --------------------------
+# BLOCO DE PAGAMENTO / ASSINATURA
+# --------------------------
+ANO = 365  # duração da assinatura em dias
+
+# Seu link gerado do Mercado Pago
+MERCADO_PAGO_LINK = "https://www.mercadopago.com.br/checkout/v1/redirect?preference-id=TEST-bb5e1499-f585-4763-b8aa-d792a3fe4201"
+
+def verificar_pagamento(email):
+    try:
+        with open("assinantes.txt", "r", encoding="utf-8") as f:
+            assinantes = [linha.strip().split(",") for linha in f.readlines()]
+            for registro in assinantes:
+                if registro[0].lower() == email.lower():
+                    data_expiracao = datetime.datetime.strptime(registro[1], "%Y-%m-%d")
+                    if data_expiracao > datetime.datetime.now():
+                        return True
+        return False
+    except FileNotFoundError:
+        return False
+
+def registrar_pagamento(email):
+    data_expiracao = (datetime.datetime.now() + datetime.timedelta(days=ANO)).strftime("%Y-%m-%d")
+    with open("assinantes.txt", "a", encoding="utf-8") as f:
+        f.write(f"{email},{data_expiracao}\n")
+
+if "assinante" not in st.session_state:
+    st.session_state["assinante"] = False
+
+if not st.session_state["assinante"]:
+    st.markdown("## Assine para acessar o conteúdo completo!")
+    st.markdown(f"[**Clique aqui para assinar por 1 ano**]({MERCADO_PAGO_LINK})", unsafe_allow_html=True)
+    st.info("Após o pagamento, digite o e-mail que você usou para liberar o acesso. O administrador precisa aprovar sua assinatura.")
+    email_pagamento = st.text_input("E-mail usado no pagamento:")
+    if st.button("Verificar pagamento"):
+        if verificar_pagamento(email_pagamento):
+            st.session_state["assinante"] = True
+            st.success("Assinatura confirmada! Aproveite o app.")
+        else:
+            st.warning("Assinatura não encontrada ou expirada. Aguarde a confirmação ou entre em contato.")
     st.stop()
 # --------------------------
 
@@ -230,6 +274,10 @@ st.markdown(
     """
     <div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>
         © 2025 Minha Conversa com Jesus | Feito com Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True
+)
     </div>
     """,
     unsafe_allow_html=True
