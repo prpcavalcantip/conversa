@@ -3,7 +3,7 @@ import openai
 import os
 import re
 
-# Defina o page_config logo na primeira linha após os imports
+# Configuração da página
 st.set_page_config(
     page_title="Minha Conversa com Jesus",
     page_icon="✝️",
@@ -38,7 +38,7 @@ def login():
         if email in usuarios and usuarios[email] == senha:
             st.session_state["usuario_logado"] = email
             st.success("Login realizado com sucesso!")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("E-mail ou senha incorretos.")
 
@@ -233,4 +233,5 @@ st.markdown(
     </div>
     """,
     unsafe_allow_html=True
+)
 )
