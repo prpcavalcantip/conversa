@@ -2,7 +2,7 @@ import streamlit as st
 import openai
 import os
 
-# Configurações iniciais do Streamlit
+# Configuração do Streamlit
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
 
 # Título centralizado
@@ -18,7 +18,7 @@ st.markdown(
 )
 feeling = st.text_input("", max_chars=120)
 
-# Função para gerar o devocional via OpenAI
+# Função para gerar o devocional via OpenAI (nova API)
 def gerar_devocional(sentimento):
     prompt = f"""
 Você é um assistente espiritual cristão. Quando alguém compartilha como está se sentindo, responda com um devocional mais aprofundado, acolhedor e reflexivo. Siga esta estrutura, escrevendo sempre em português:
@@ -40,8 +40,8 @@ Exemplo:
 
 Agora gere o devocional para: "{sentimento}"
 """
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    response = openai.ChatCompletion.create(
+    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=700,
@@ -77,8 +77,3 @@ st.markdown(
     "© 2025 Minha Conversa com Jesus | Feito com Streamlit"
     "</div>", unsafe_allow_html=True
 )
-
-st.markdown("<hr>", unsafe_allow_html=True)
-st.caption("Feito com ❤️ usando Streamlit & OpenAI")
-
-
