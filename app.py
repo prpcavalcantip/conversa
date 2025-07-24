@@ -13,7 +13,7 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Container principal e estilos gerais */
+    /* Fundo degradê suave */
     body {
         background: linear-gradient(135deg, #f8f9fa, #e0f7fa);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -21,6 +21,7 @@ st.markdown(
         margin: 0;
         padding: 0;
     }
+    /* Container principal */
     .container {
         max-width: 720px;
         background: white;
@@ -29,6 +30,7 @@ st.markdown(
         border-radius: 25px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     }
+    /* Título principal */
     h1 {
         font-size: 3.2rem;
         font-weight: 900;
@@ -38,6 +40,7 @@ st.markdown(
         letter-spacing: 2px;
         text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
     }
+    /* Subtítulo */
     .subtitle {
         font-size: 1.5rem;
         color: #004d40;
@@ -45,6 +48,7 @@ st.markdown(
         margin-bottom: 2.5rem;
         font-weight: 600;
     }
+    /* Input estilizado */
     input[type="text"] {
         font-size: 1.15rem;
         padding: 14px 18px;
@@ -59,15 +63,17 @@ st.markdown(
         border-color: #004d40 !important;
         box-shadow: 0 0 6px #004d40aa !important;
     }
-    /* Esconde o botão original do Streamlit */
+    /* Botão original escondido sem ocupar espaço */
     #streamlit-button {
-        opacity: 0;
-        position: absolute;
-        pointer-events: none;
-        height: 0;
-        width: 0;
+        position: absolute !important;
+        width: 0 !important;
+        height: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
+        z-index: -10 !important;
     }
-    /* Botão fake customizado */
+    /* Botão customizado */
     .custom-button {
         display: inline-block;
         background-color: #009688;
@@ -90,6 +96,7 @@ st.markdown(
         background-color: #00796b;
         box-shadow: 0 12px 40px rgba(0, 121, 107, 0.85);
     }
+    /* Caixa do devocional */
     .devotional-box {
         background: #e0f2f1;
         padding: 2rem 2.5rem;
@@ -121,7 +128,7 @@ st.markdown(
     </style>
 
     <script>
-    // Função para clicar no botão oculto do Streamlit ao clicar no botão fake
+    // Dispara clique no botão Streamlit escondido
     function triggerStreamlitButton() {
         const btn = document.getElementById("streamlit-button");
         if (btn) {
@@ -144,10 +151,23 @@ feeling = st.text_input(
     key="feeling_input",
 )
 
-# Botão "real" invisível
-botao_real = st.button("Gerar Devocional", key="btn_real")
+# Botão invisível do Streamlit, com id para o JS
+botao_real = st.button("Gerar Devocional", key="btn_real", help="Botão oculto", args=None)
 
-# Botão fake estilizado em HTML
+# Ajusta o botão real para ter id para JS, com hackzinho
+st.markdown(
+    """
+    <script>
+    const btnStreamlit = window.parent.document.querySelector('button[kind="primary"]');
+    if (btnStreamlit) {
+        btnStreamlit.id = "streamlit-button";
+    }
+    </script>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Botão customizado visível
 st.markdown(
     """
     <div class="custom-button" onclick="triggerStreamlitButton()">
@@ -185,23 +205,4 @@ Agora, crie o devocional para o sentimento: "{sentimento}".
     return resposta.choices[0].message.content.strip()
 
 if botao_real and feeling:
-    with st.spinner("Gerando seu devocional..."):
-        try:
-            devocional = gerar_devocional(feeling)
-            devocional_formatado = formatar_negrito(devocional)
-            st.markdown(f'<div class="devotional-box">{devocional_formatado}</div>', unsafe_allow_html=True)
-            st.success("Devocional gerado com sucesso! 🙏")
-        except Exception as e:
-            st.error("Erro ao gerar o devocional. Verifique sua chave da OpenAI ou tente novamente.")
-            st.exception(e)
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <footer>
-        © 2025 Minha Conversa com Jesus | Feito com ❤️ em Streamlit
-    </footer>
-    """,
-    unsafe_allow_html=True,
-)
+    with st.spinn
