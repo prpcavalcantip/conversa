@@ -1,10 +1,9 @@
 import streamlit as st
-import openai
 import re
-import os
+from openai import OpenAI  # nova forma de usar a biblioteca
 
-# Carrega a chave da OpenAI de maneira segura
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Cria o cliente com a chave do Streamlit Secrets
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Configuração da página
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
@@ -29,17 +28,18 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Campo de entrada
 feeling = st.text_input(
     label="Descreva em poucas palavras seu estado emocional:",
     max_chars=120,
     placeholder="Ex: me sinto ansioso, cansado e desmotivado"
 )
 
-# Função para formatar negrito em HTML
+# Função para converter **texto** em <strong>texto</strong>
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
 
-# Geração do devocional via API
+# Função para gerar o devocional com base no sentimento
 def gerar_devocional(sentimento):
     prompt = f"""
 Você é um assistente espiritual cristão. Quando alguém compartilha como está se sentindo, responda com um devocional mais aprofundado, acolhedor e reflexivo. Siga esta estrutura, escrevendo sempre em português:
@@ -66,7 +66,7 @@ Formate a resposta em blocos bem separados e com títulos marcados com **, assim
 
 Agora gere o devocional para: "{sentimento}"
 """
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=700,
@@ -74,7 +74,7 @@ Agora gere o devocional para: "{sentimento}"
     )
     return response.choices[0].message.content.strip()
 
-# Botão de ação
+# Botão para gerar o devocional
 if st.button("Gerar Devocional") and feeling:
     with st.spinner('Gerando seu devocional...'):
         devocional = gerar_devocional(feeling)
@@ -82,7 +82,7 @@ if st.button("Gerar Devocional") and feeling:
         st.markdown(
             f"""
             <div style='background-color: #f9fafb; border-radius: 16px; padding: 24px; margin-top: 24px; 
-            text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; 
+            text-align: left; max-width: 600px; margin-left: auto; margin-right: auto; 
             font-size: 1.12em; line-height: 1.6; white-space: pre-wrap;'>
             {devocional_formatado}
             </div>
