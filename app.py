@@ -1,9 +1,9 @@
 import streamlit as st
 import re
-from openai import OpenAI  # nova forma de usar a biblioteca
+import openai  # versão antiga
 
-# Cria o cliente com a chave do Streamlit Secrets
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# Configura a chave da OpenAI de forma segura (via secrets)
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Configuração da página
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
@@ -35,11 +35,11 @@ feeling = st.text_input(
     placeholder="Ex: me sinto ansioso, cansado e desmotivado"
 )
 
-# Função para converter **texto** em <strong>texto</strong>
+# Função para formatar negrito
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
 
-# Função para gerar o devocional com base no sentimento
+# Função para gerar o devocional
 def gerar_devocional(sentimento):
     prompt = f"""
 Você é um assistente espiritual cristão. Quando alguém compartilha como está se sentindo, responda com um devocional mais aprofundado, acolhedor e reflexivo. Siga esta estrutura, escrevendo sempre em português:
@@ -66,7 +66,7 @@ Formate a resposta em blocos bem separados e com títulos marcados com **, assim
 
 Agora gere o devocional para: "{sentimento}"
 """
-    response = client.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=700,
@@ -74,7 +74,7 @@ Agora gere o devocional para: "{sentimento}"
     )
     return response.choices[0].message.content.strip()
 
-# Botão para gerar o devocional
+# Geração do devocional
 if st.button("Gerar Devocional") and feeling:
     with st.spinner('Gerando seu devocional...'):
         devocional = gerar_devocional(feeling)
