@@ -2,38 +2,44 @@ import streamlit as st
 import re
 from openai import OpenAI
 
-# Inicializa o cliente OpenAI com a chave segura
+# Inicializa cliente OpenAI com chave segura do Streamlit Secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# Configura a página
+# Configuração da página
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
 
 # Título
-st.markdown("""
+st.markdown(
+    """
     <h1 style='text-align: center; font-size: 2.5em; margin-bottom: 30px;'>
         Minha Conversa com Jesus
     </h1>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
 # Pergunta ao usuário
-st.markdown("""
+st.markdown(
+    """
     <div style='text-align: center; font-size: 1.25em; margin-bottom: 20px;'>
         Como você está se sentindo hoje?
     </div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
-# Campo de entrada
+# Entrada do sentimento
 feeling = st.text_input(
     label="Descreva em poucas palavras seu estado emocional:",
     max_chars=120,
-    placeholder="Ex: me sinto ansioso, cansado e desmotivado"
+    placeholder="Ex: me sinto ansioso, cansado e desmotivado",
 )
 
 # Função para converter **texto** em <strong>texto</strong>
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
 
-# Função para gerar o devocional
+# Função para gerar o devocional com prompt formatado
 def gerar_devocional(sentimento):
     prompt_template = """
 Você é um assistente espiritual cristão. Quando alguém compartilha como está se sentindo, responda com um devocional mais aprofundado, acolhedor e reflexivo. Siga esta estrutura, escrevendo sempre em português:
@@ -66,4 +72,37 @@ Agora gere o devocional para: "{sentimento}"
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=700,
-        tempera
+        temperature=0.7,
+    )
+    return resposta.choices[0].message.content.strip()
+
+# Ação do botão para gerar devocional
+if st.button("Gerar Devocional") and feeling:
+    with st.spinner("Gerando seu devocional..."):
+        try:
+            devocional = gerar_devocional(feeling)
+            devocional_formatado = formatar_negrito(devocional)
+            st.markdown(
+                f"""
+                <div style='background-color: #f9fafb; border-radius: 16px; padding: 24px; margin-top: 24px;
+                text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;
+                font-size: 1.12em; line-height: 1.6; white-space: pre-wrap;'>
+                    {devocional_formatado}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            st.success("Devocional gerado com sucesso! 🙏")
+        except Exception as e:
+            st.error("Ocorreu um erro ao gerar o devocional. Verifique sua chave da OpenAI ou tente novamente.")
+            st.exception(e)
+
+# Rodapé
+st.markdown(
+    """
+    <div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>
+        © 2025 Minha Conversa com Jesus | Feito com ❤️ em Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
