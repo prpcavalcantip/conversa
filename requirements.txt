@@ -1,2 +1,2 @@
-mercadopago>=1.0.30
-streamlit>=1.22.0
+streamlit
+openai
