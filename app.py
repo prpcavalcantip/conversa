@@ -2,21 +2,18 @@ import streamlit as st
 import re
 from openai import OpenAI
 
-# Inicializa o cliente OpenAI com chave segura do Streamlit Secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# Configuração da página
 st.set_page_config(
     page_title="Minha Conversa com Jesus",
     page_icon="✝️",
     layout="centered",
 )
 
-# CSS para interface moderna, colorida e responsiva com botão aprimorado
 st.markdown(
     """
     <style>
-    /* Fundo degradê suave */
+    /* Container principal e estilos gerais */
     body {
         background: linear-gradient(135deg, #f8f9fa, #e0f7fa);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,7 +21,6 @@ st.markdown(
         margin: 0;
         padding: 0;
     }
-    /* Container principal */
     .container {
         max-width: 720px;
         background: white;
@@ -33,7 +29,6 @@ st.markdown(
         border-radius: 25px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     }
-    /* Título principal */
     h1 {
         font-size: 3.2rem;
         font-weight: 900;
@@ -43,7 +38,6 @@ st.markdown(
         letter-spacing: 2px;
         text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
     }
-    /* Subtítulo */
     .subtitle {
         font-size: 1.5rem;
         color: #004d40;
@@ -51,39 +45,51 @@ st.markdown(
         margin-bottom: 2.5rem;
         font-weight: 600;
     }
-    /* Caixa do input */
-    .stTextInput > div > div > input {
+    input[type="text"] {
         font-size: 1.15rem;
         padding: 14px 18px;
-        border: 2px solid #00796b;
-        border-radius: 12px;
+        border: 2px solid #00796b !important;
+        border-radius: 12px !important;
         transition: border-color 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
     }
-    .stTextInput > div > div > input:focus {
+    input[type="text"]:focus {
         outline: none;
-        border-color: #004d40;
-        box-shadow: 0 0 6px #004d40aa;
+        border-color: #004d40 !important;
+        box-shadow: 0 0 6px #004d40aa !important;
     }
-    /* Botão aprimorado */
-    button[kind="primary"] {
-        background-color: #009688 !important;
-        color: white !important;
-        font-weight: 800 !important;
-        font-size: 1.3rem !important;
-        padding: 1rem 3rem !important;
-        border-radius: 30px !important;
-        box-shadow: 0 8px 25px rgba(0, 150, 136, 0.6) !important;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        border: none !important;
+    /* Esconde o botão original do Streamlit */
+    #streamlit-button {
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+        height: 0;
+        width: 0;
+    }
+    /* Botão fake customizado */
+    .custom-button {
+        display: inline-block;
+        background-color: #009688;
+        color: white;
+        font-weight: 800;
+        font-size: 1.3rem;
+        padding: 1rem 3rem;
+        border-radius: 30px;
+        box-shadow: 0 8px 25px rgba(0, 150, 136, 0.6);
+        border: none;
+        cursor: pointer;
+        user-select: none;
         text-transform: uppercase;
         letter-spacing: 1.1px;
+        text-align: center;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        margin-top: 10px;
     }
-    button[kind="primary"]:hover {
-        background-color: #00796b !important;
-        box-shadow: 0 12px 40px rgba(0, 121, 107, 0.85) !important;
-        cursor: pointer;
+    .custom-button:hover {
+        background-color: #00796b;
+        box-shadow: 0 12px 40px rgba(0, 121, 107, 0.85);
     }
-    /* Caixa do devocional */
     .devotional-box {
         background: #e0f2f1;
         padding: 2rem 2.5rem;
@@ -97,7 +103,6 @@ st.markdown(
         font-weight: 500;
         border: 2px solid #004d40;
     }
-    /* Rodapé */
     footer {
         text-align: center;
         color: #00796b;
@@ -105,7 +110,6 @@ st.markdown(
         margin-bottom: 2rem;
         font-weight: 600;
     }
-    /* Links no rodapé */
     footer a {
         color: #004d40;
         text-decoration: none;
@@ -115,18 +119,24 @@ st.markdown(
         text-decoration: underline;
     }
     </style>
+
+    <script>
+    // Função para clicar no botão oculto do Streamlit ao clicar no botão fake
+    function triggerStreamlitButton() {
+        const btn = document.getElementById("streamlit-button");
+        if (btn) {
+            btn.click();
+        }
+    }
+    </script>
     """,
     unsafe_allow_html=True,
 )
 
-# Container para centralizar conteúdo
 st.markdown('<div class="container">', unsafe_allow_html=True)
-
-# Título e subtítulo
 st.markdown("<h1>Minha Conversa com Jesus</h1>", unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Como você está se sentindo hoje? Compartilhe e receba um devocional especial.</p>', unsafe_allow_html=True)
 
-# Campo de entrada do sentimento
 feeling = st.text_input(
     label="Descreva em poucas palavras seu estado emocional:",
     max_chars=120,
@@ -134,11 +144,23 @@ feeling = st.text_input(
     key="feeling_input",
 )
 
+# Botão "real" invisível
+botao_real = st.button("Gerar Devocional", key="btn_real")
+
+# Botão fake estilizado em HTML
+st.markdown(
+    """
+    <div class="custom-button" onclick="triggerStreamlitButton()">
+        Gerar Devocional
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Função para converter **texto** em <strong>texto</strong>
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
 
-# Função para gerar devocional (mais profundo)
 def gerar_devocional(sentimento):
     prompt_template = """
 Você é um assistente espiritual cristão muito acolhedor e profundo. Quando alguém compartilha seu sentimento, responda com um devocional especial e mais aprofundado, estruturado assim:
@@ -162,8 +184,7 @@ Agora, crie o devocional para o sentimento: "{sentimento}".
     )
     return resposta.choices[0].message.content.strip()
 
-# Botão para gerar devocional
-if st.button("Gerar Devocional") and feeling:
+if botao_real and feeling:
     with st.spinner("Gerando seu devocional..."):
         try:
             devocional = gerar_devocional(feeling)
@@ -174,10 +195,8 @@ if st.button("Gerar Devocional") and feeling:
             st.error("Erro ao gerar o devocional. Verifique sua chave da OpenAI ou tente novamente.")
             st.exception(e)
 
-# Fecha container
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Rodapé
 st.markdown(
     """
     <footer>
