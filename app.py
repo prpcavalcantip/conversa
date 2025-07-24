@@ -12,7 +12,7 @@ st.set_page_config(
     layout="centered",
 )
 
-# CSS para interface moderna, colorida e responsiva
+# CSS para interface moderna, colorida e responsiva com botão aprimorado
 st.markdown(
     """
     <style>
@@ -64,20 +64,23 @@ st.markdown(
         border-color: #004d40;
         box-shadow: 0 0 6px #004d40aa;
     }
-    /* Botão customizado */
+    /* Botão aprimorado */
     button[kind="primary"] {
-        background-color: #00796b !important;
+        background-color: #009688 !important;
         color: white !important;
-        font-weight: 700 !important;
-        font-size: 1.2rem !important;
-        padding: 0.75rem 2.5rem !important;
-        border-radius: 15px !important;
-        box-shadow: 0 6px 20px rgba(0,121,107,0.5) !important;
+        font-weight: 800 !important;
+        font-size: 1.3rem !important;
+        padding: 1rem 3rem !important;
+        border-radius: 30px !important;
+        box-shadow: 0 8px 25px rgba(0, 150, 136, 0.6) !important;
         transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        border: none !important;
+        text-transform: uppercase;
+        letter-spacing: 1.1px;
     }
     button[kind="primary"]:hover {
-        background-color: #004d40 !important;
-        box-shadow: 0 10px 30px rgba(0,77,64,0.7) !important;
+        background-color: #00796b !important;
+        box-shadow: 0 12px 40px rgba(0, 121, 107, 0.85) !important;
         cursor: pointer;
     }
     /* Caixa do devocional */
@@ -135,17 +138,17 @@ feeling = st.text_input(
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
 
-# Função para gerar devocional
+# Função para gerar devocional (mais profundo)
 def gerar_devocional(sentimento):
     prompt_template = """
-Você é um assistente espiritual cristão muito acolhedor e profundo. Quando alguém compartilha seu sentimento, responda com um devocional especial, estruturado assim:
+Você é um assistente espiritual cristão muito acolhedor e profundo. Quando alguém compartilha seu sentimento, responda com um devocional especial e mais aprofundado, estruturado assim:
 
 1. **Palavra de Jesus:** Um versículo dito por Jesus nos Evangelhos relacionado ao sentimento: "{sentimento}". Cite o livro e versículo.
-2. **Reflexão:** Uma reflexão profunda, de 3 a 4 parágrafos, mostrando como Jesus consola, fortalece e guia em situações como essa.
-3. **Oração:** Uma oração personalizada, convidando Jesus para confortar e transformar o coração da pessoa.
-4. **Práticas diárias:** Três sugestões práticas, simples e efetivas para viver essa Palavra hoje e fortalecer a fé.
+2. **Reflexão:** Uma reflexão bem profunda, de 4 a 5 parágrafos, mostrando como Jesus consola, fortalece e guia em situações assim, trazendo esperança e transformação.
+3. **Oração:** Uma oração calorosa e personalizada, convidando Jesus para restaurar, confortar e renovar a fé da pessoa.
+4. **Práticas diárias:** Três sugestões práticas, simples e eficazes para viver essa Palavra hoje e fortalecer a fé no dia a dia.
 
-Use uma linguagem clara, amorosa e inspiradora, escreva em português, e formate o texto com títulos em negrito **como neste exemplo**.
+Use linguagem clara, amorosa e inspiradora, escreva em português, e formate o texto com títulos em negrito **como neste exemplo**.
 
 Agora, crie o devocional para o sentimento: "{sentimento}".
 """
@@ -154,7 +157,7 @@ Agora, crie o devocional para o sentimento: "{sentimento}".
     resposta = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=900,
+        max_tokens=1000,
         temperature=0.75,
     )
     return resposta.choices[0].message.content.strip()
