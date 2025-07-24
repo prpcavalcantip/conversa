@@ -4,78 +4,18 @@ from openai import OpenAI
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.set_page_config(
-    page_title="Minha Conversa com Jesus",
-    page_icon="✝️",
-    layout="centered",
-)
+st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
 
 st.markdown(
     """
     <style>
-    /* Fundo degradê suave */
-    body {
-        background: linear-gradient(135deg, #f8f9fa, #e0f7fa);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #34495e;
-        margin: 0;
-        padding: 0;
+    /* Esconde totalmente o botão original do Streamlit */
+    button[kind="primary"] {
+        display: none !important;
     }
-    /* Container principal */
-    .container {
-        max-width: 720px;
-        background: white;
-        margin: 3rem auto 4rem;
-        padding: 2.5rem 3rem;
-        border-radius: 25px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-    }
-    /* Título principal */
-    h1 {
-        font-size: 3.2rem;
-        font-weight: 900;
-        color: #00796b;
-        text-align: center;
-        margin-bottom: 0.3rem;
-        letter-spacing: 2px;
-        text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
-    }
-    /* Subtítulo */
-    .subtitle {
-        font-size: 1.5rem;
-        color: #004d40;
-        text-align: center;
-        margin-bottom: 2.5rem;
-        font-weight: 600;
-    }
-    /* Input estilizado */
-    input[type="text"] {
-        font-size: 1.15rem;
-        padding: 14px 18px;
-        border: 2px solid #00796b !important;
-        border-radius: 12px !important;
-        transition: border-color 0.3s ease;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    input[type="text"]:focus {
-        outline: none;
-        border-color: #004d40 !important;
-        box-shadow: 0 0 6px #004d40aa !important;
-    }
-    /* Botão original escondido sem ocupar espaço */
-    #streamlit-button {
-        position: absolute !important;
-        width: 0 !important;
-        height: 0 !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        overflow: hidden !important;
-        z-index: -10 !important;
-    }
-    /* Botão customizado */
+
+    /* Estilos do botão customizado */
     .custom-button {
-        display: inline-block;
         background-color: #009688;
         color: white;
         font-weight: 800;
@@ -91,11 +31,51 @@ st.markdown(
         text-align: center;
         transition: background-color 0.3s ease, box-shadow 0.3s ease;
         margin-top: 10px;
+        display: inline-block;
     }
     .custom-button:hover {
         background-color: #00796b;
         box-shadow: 0 12px 40px rgba(0, 121, 107, 0.85);
     }
+
+    /* Título e descrição */
+    h1 {
+        text-align: center;
+        color: #00796b;
+        margin-bottom: 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 900;
+        font-size: 3rem;
+        letter-spacing: 2px;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+    }
+    p.subtitle {
+        text-align: center;
+        font-size: 1.25rem;
+        color: #004d40;
+        margin-bottom: 2rem;
+        font-weight: 600;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Input text estilizado */
+    input[type="text"] {
+        font-size: 1.15rem;
+        padding: 14px 18px;
+        border: 2px solid #00796b !important;
+        border-radius: 12px !important;
+        transition: border-color 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-bottom: 20px;
+    }
+    input[type="text"]:focus {
+        outline: none;
+        border-color: #004d40 !important;
+        box-shadow: 0 0 6px #004d40aa !important;
+    }
+
     /* Caixa do devocional */
     .devotional-box {
         background: #e0f2f1;
@@ -109,30 +89,23 @@ st.markdown(
         margin-top: 2.5rem;
         font-weight: 500;
         border: 2px solid #004d40;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    footer {
-        text-align: center;
-        color: #00796b;
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
-        font-weight: 600;
-    }
-    footer a {
-        color: #004d40;
-        text-decoration: none;
-        font-weight: 700;
-    }
-    footer a:hover {
-        text-decoration: underline;
+
+    /* Fundo da página */
+    body {
+        background: linear-gradient(135deg, #f8f9fa, #e0f7fa);
+        margin: 0;
+        padding: 0 1rem 3rem;
     }
     </style>
 
     <script>
-    // Dispara clique no botão Streamlit escondido
+    // Função para disparar o clique do botão Streamlit invisível
     function triggerStreamlitButton() {
-        const btn = document.getElementById("streamlit-button");
-        if (btn) {
-            btn.click();
+        const buttons = window.parent.document.querySelectorAll('button[kind="primary"]');
+        if (buttons.length > 0) {
+            buttons[0].click();
         }
     }
     </script>
@@ -140,7 +113,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown('<div class="container">', unsafe_allow_html=True)
 st.markdown("<h1>Minha Conversa com Jesus</h1>", unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Como você está se sentindo hoje? Compartilhe e receba um devocional especial.</p>', unsafe_allow_html=True)
 
@@ -151,20 +123,9 @@ feeling = st.text_input(
     key="feeling_input",
 )
 
-botao_real = st.button("Gerar Devocional", key="btn_real")
+botao_real = st.button("Gerar Devocional")
 
-st.markdown(
-    """
-    <script>
-    const btnStreamlit = window.parent.document.querySelector('button[kind="primary"]');
-    if (btnStreamlit) {
-        btnStreamlit.id = "streamlit-button";
-    }
-    </script>
-    """,
-    unsafe_allow_html=True,
-)
-
+# Botão customizado que dispara o clique do botão real invisível
 st.markdown(
     """
     <div class="custom-button" onclick="triggerStreamlitButton()">
@@ -174,8 +135,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
+
 
 def gerar_devocional(sentimento):
     prompt_template = """
@@ -183,41 +146,4 @@ Você é um assistente espiritual cristão muito acolhedor e profundo. Quando al
 
 1. **Palavra de Jesus:** Um versículo dito por Jesus nos Evangelhos relacionado ao sentimento: "{sentimento}". Cite o livro e versículo.
 2. **Reflexão:** Uma reflexão bem profunda, de 4 a 5 parágrafos, mostrando como Jesus consola, fortalece e guia em situações assim, trazendo esperança e transformação.
-3. **Oração:** Uma oração calorosa e personalizada, convidando Jesus para restaurar, confortar e renovar a fé da pessoa.
-4. **Práticas diárias:** Três sugestões práticas, simples e eficazes para viver essa Palavra hoje e fortalecer a fé no dia a dia.
-
-Use linguagem clara, amorosa e inspiradora, escreva em português, e formate o texto com títulos em negrito **como neste exemplo**.
-
-Agora, crie o devocional para o sentimento: "{sentimento}".
-"""
-    prompt = prompt_template.format(sentimento=sentimento)
-
-    resposta = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=1000,
-        temperature=0.75,
-    )
-    return resposta.choices[0].message.content.strip()
-
-if botao_real and feeling:
-    with st.spinner("Gerando seu devocional..."):
-        try:
-            devocional = gerar_devocional(feeling)
-            devocional_formatado = formatar_negrito(devocional)
-            st.markdown(f'<div class="devotional-box">{devocional_formatado}</div>', unsafe_allow_html=True)
-            st.success("Devocional gerado com sucesso! 🙏")
-        except Exception as e:
-            st.error("Erro ao gerar o devocional. Verifique sua chave da OpenAI ou tente novamente.")
-            st.exception(e)
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <footer>
-        © 2025 Minha Conversa com Jesus | Feito com ❤️ em Streamlit
-    </footer>
-    """,
-    unsafe_allow_html=True,
-)
+3. **Oração:** Uma oração calorosa e personalizada, convidando Jesus para restaurar, confortar e
