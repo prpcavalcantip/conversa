@@ -2,107 +2,130 @@ import streamlit as st
 import re
 from openai import OpenAI
 
-# Inicializa cliente OpenAI com chave segura do Streamlit Secrets
+# Inicializa o cliente OpenAI com a chave segura
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Configuração da página
-st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
+st.set_page_config(
+    page_title="Minha Conversa com Jesus",
+    page_icon="✝️",
+    layout="centered",
+)
 
-# Título
+# Estilos CSS personalizados para melhorar visual
 st.markdown(
     """
-    <h1 style='text-align: center; font-size: 2.5em; margin-bottom: 30px;'>
-        Minha Conversa com Jesus
-    </h1>
+    <style>
+    body {
+        background: #f0f2f6;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+    .title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.2rem;
+    }
+    .subtitle {
+        font-size: 1.4rem;
+        color: #34495e;
+        margin-bottom: 2rem;
+    }
+    .input-box {
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .button {
+        background-color: #2980b9;
+        color: white;
+        font-weight: 600;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
+    }
+    .button:hover {
+        background-color: #1f618d;
+    }
+    .devotional-box {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        max-width: 650px;
+        margin: 2rem auto 4rem;
+        font-size: 1.15rem;
+        line-height: 1.6;
+        color: #2c3e50;
+        white-space: pre-wrap;
+    }
+    .footer {
+        text-align: center;
+        color: #7f8c8d;
+        margin-top: 4rem;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+    }
+    </style>
     """,
     unsafe_allow_html=True,
 )
 
-# Pergunta ao usuário
-st.markdown(
-    """
-    <div style='text-align: center; font-size: 1.25em; margin-bottom: 20px;'>
-        Como você está se sentindo hoje?
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# Título e subtítulo
+st.markdown("<h1 class='title'>Minha Conversa com Jesus</h1>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>Como você está se sentindo hoje? Compartilhe e receba um devocional especial.</p>", unsafe_allow_html=True)
 
-# Entrada do sentimento
+# Campo de entrada do sentimento
 feeling = st.text_input(
     label="Descreva em poucas palavras seu estado emocional:",
     max_chars=120,
     placeholder="Ex: me sinto ansioso, cansado e desmotivado",
+    key="feeling_input",
 )
 
-# Função para converter **texto** em <strong>texto</strong>
+# Função para formatar negrito **texto** em <strong>texto</strong>
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
 
-# Função para gerar o devocional com prompt formatado
+# Função para gerar devocional com oração e práticas
 def gerar_devocional(sentimento):
     prompt_template = """
-Você é um assistente espiritual cristão. Quando alguém compartilha como está se sentindo, responda com um devocional mais aprofundado, acolhedor e reflexivo. Siga esta estrutura, escrevendo sempre em português:
+Você é um assistente espiritual cristão muito acolhedor e profundo. Quando alguém compartilha seu sentimento, responda com um devocional especial, estruturado assim:
 
-1. Palavra de Jesus: Escolha um versículo dito por Jesus nos Evangelhos que se relacione com o sentimento: "{sentimento}". Cite o livro e o versículo.
-2. Reflexão: Escreva uma reflexão mais profunda (aprox. 2-3 parágrafos) conectando o versículo ao sentimento relatado, mostrando como as palavras de Jesus podem transformar a situação, trazendo consolo, direção e esperança.
-3. Oração: Escreva uma oração personalizada, baseada no sentimento e na Palavra escolhida, convidando Jesus para a situação da pessoa.
-4. Sugestões práticas para o dia: Ofereça pelo menos duas sugestões simples, concretas e atuais para a pessoa viver aquela Palavra de Jesus no dia de hoje (por exemplo: separar um tempo de silêncio, enviar uma mensagem para alguém, anotar motivos de gratidão, etc).
+1. **Palavra de Jesus:** Um versículo ditado por Jesus nos Evangelhos relacionado ao sentimento: "{sentimento}". Cite o livro e versículo.
+2. **Reflexão:** Uma reflexão profunda, de 3 a 4 parágrafos, mostrando como Jesus consola, fortalece e guia em situações como essa.
+3. **Oração:** Uma oração personalizada, convidando Jesus para confortar e transformar o coração da pessoa.
+4. **Práticas diárias:** Três sugestões práticas, simples e efetivas para viver essa Palavra hoje e fortalecer a fé.
 
-Formate a resposta em blocos bem separados e com títulos marcados com **, assim:
+Use uma linguagem clara, amorosa e inspiradora, escreva em português, e formate o texto com títulos em negrito **como neste exemplo**.
 
-**Palavra de Jesus:**  
-<versículo>
-
-**Reflexão:**  
-<reflexão>
-
-**Oração:**  
-<oração>
-
-**Sugestões práticas para o dia:**  
-• <sugestão 1>  
-• <sugestão 2>
-
-Agora gere o devocional para: "{sentimento}"
+Agora, crie o devocional para o sentimento: "{sentimento}".
 """
     prompt = prompt_template.format(sentimento=sentimento)
 
     resposta = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=700,
-        temperature=0.7,
+        max_tokens=900,
+        temperature=0.75,
     )
     return resposta.choices[0].message.content.strip()
 
-# Ação do botão para gerar devocional
+# Botão para gerar devocional
 if st.button("Gerar Devocional") and feeling:
     with st.spinner("Gerando seu devocional..."):
         try:
             devocional = gerar_devocional(feeling)
             devocional_formatado = formatar_negrito(devocional)
-            st.markdown(
-                f"""
-                <div style='background-color: #f9fafb; border-radius: 16px; padding: 24px; margin-top: 24px;
-                text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;
-                font-size: 1.12em; line-height: 1.6; white-space: pre-wrap;'>
-                    {devocional_formatado}
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.markdown(f"<div class='devotional-box'>{devocional_formatado}</div>", unsafe_allow_html=True)
             st.success("Devocional gerado com sucesso! 🙏")
         except Exception as e:
-            st.error("Ocorreu um erro ao gerar o devocional. Verifique sua chave da OpenAI ou tente novamente.")
+            st.error("Erro ao gerar o devocional. Verifique sua chave da OpenAI ou tente novamente.")
             st.exception(e)
 
 # Rodapé
-st.markdown(
-    """
-    <div style='text-align: center; font-size: 1em; margin-top: 50px; color: #6c757d;'>
-        © 2025 Minha Conversa com Jesus | Feito com ❤️ em Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("<div class='footer'>© 2025 Minha Conversa com Jesus | Feito com ❤️ em Streamlit</div>", unsafe_allow_html=True)
