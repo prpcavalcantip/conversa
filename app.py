@@ -151,10 +151,8 @@ feeling = st.text_input(
     key="feeling_input",
 )
 
-# Botão invisível do Streamlit, com id para o JS
-botao_real = st.button("Gerar Devocional", key="btn_real", help="Botão oculto", args=None)
+botao_real = st.button("Gerar Devocional", key="btn_real")
 
-# Ajusta o botão real para ter id para JS, com hackzinho
 st.markdown(
     """
     <script>
@@ -167,7 +165,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Botão customizado visível
 st.markdown(
     """
     <div class="custom-button" onclick="triggerStreamlitButton()">
@@ -177,7 +174,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Função para converter **texto** em <strong>texto</strong>
 def formatar_negrito(texto):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
 
@@ -205,4 +201,23 @@ Agora, crie o devocional para o sentimento: "{sentimento}".
     return resposta.choices[0].message.content.strip()
 
 if botao_real and feeling:
-    with st.spinn
+    with st.spinner("Gerando seu devocional..."):
+        try:
+            devocional = gerar_devocional(feeling)
+            devocional_formatado = formatar_negrito(devocional)
+            st.markdown(f'<div class="devotional-box">{devocional_formatado}</div>', unsafe_allow_html=True)
+            st.success("Devocional gerado com sucesso! 🙏")
+        except Exception as e:
+            st.error("Erro ao gerar o devocional. Verifique sua chave da OpenAI ou tente novamente.")
+            st.exception(e)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <footer>
+        © 2025 Minha Conversa com Jesus | Feito com ❤️ em Streamlit
+    </footer>
+    """,
+    unsafe_allow_html=True,
+)
