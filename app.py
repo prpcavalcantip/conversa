@@ -2,8 +2,8 @@ import streamlit as st
 import openai
 import re
 
-# Sua chave OpenAI diretamente no código
-OPENAI_API_KEY = "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"
+# Chave OpenAI fornecida pelo usuário
+OPENAI_API_KEY = "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"
 
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
 
