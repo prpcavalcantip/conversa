@@ -2,19 +2,22 @@ import streamlit as st
 import re
 from openai import OpenAI
 
+# Inicializa cliente OpenAI com chave do secrets.toml
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+# Configurações da página
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="✝️", layout="centered")
 
+# CSS e JS para esconder botão original e criar botão customizado
 st.markdown(
     """
     <style>
-    /* Esconde totalmente o botão original do Streamlit */
+    /* Esconder botão padrão do Streamlit */
     button[kind="primary"] {
         display: none !important;
     }
 
-    /* Estilos do botão customizado */
+    /* Botão customizado */
     .custom-button {
         background-color: #009688;
         color: white;
@@ -38,7 +41,7 @@ st.markdown(
         box-shadow: 0 12px 40px rgba(0, 121, 107, 0.85);
     }
 
-    /* Título e descrição */
+    /* Estilo título */
     h1 {
         text-align: center;
         color: #00796b;
@@ -49,6 +52,8 @@ st.markdown(
         letter-spacing: 2px;
         text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
     }
+
+    /* Subtítulo */
     p.subtitle {
         text-align: center;
         font-size: 1.25rem;
@@ -58,7 +63,7 @@ st.markdown(
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    /* Input text estilizado */
+    /* Input text */
     input[type="text"] {
         font-size: 1.15rem;
         padding: 14px 18px;
@@ -76,7 +81,7 @@ st.markdown(
         box-shadow: 0 0 6px #004d40aa !important;
     }
 
-    /* Caixa do devocional */
+    /* Caixa devocional */
     .devotional-box {
         background: #e0f2f1;
         padding: 2rem 2.5rem;
@@ -101,7 +106,7 @@ st.markdown(
     </style>
 
     <script>
-    // Função para disparar o clique do botão Streamlit invisível
+    // Dispara clique do botão original do Streamlit invisível
     function triggerStreamlitButton() {
         const buttons = window.parent.document.querySelectorAll('button[kind="primary"]');
         if (buttons.length > 0) {
@@ -113,9 +118,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Título e subtítulo
 st.markdown("<h1>Minha Conversa com Jesus</h1>", unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Como você está se sentindo hoje? Compartilhe e receba um devocional especial.</p>', unsafe_allow_html=True)
 
+# Input do sentimento
 feeling = st.text_input(
     label="Descreva em poucas palavras seu estado emocional:",
     max_chars=120,
@@ -123,9 +130,10 @@ feeling = st.text_input(
     key="feeling_input",
 )
 
+# Botão original invisível
 botao_real = st.button("Gerar Devocional")
 
-# Botão customizado que dispara o clique do botão real invisível
+# Botão customizado que dispara o clique do botão real
 st.markdown(
     """
     <div class="custom-button" onclick="triggerStreamlitButton()">
@@ -135,15 +143,5 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-def formatar_negrito(texto):
-    return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', texto)
-
-
-def gerar_devocional(sentimento):
-    prompt_template = """
-Você é um assistente espiritual cristão muito acolhedor e profundo. Quando alguém compartilha seu sentimento, responda com um devocional especial e mais aprofundado, estruturado assim:
-
-1. **Palavra de Jesus:** Um versículo dito por Jesus nos Evangelhos relacionado ao sentimento: "{sentimento}". Cite o livro e versículo.
-2. **Reflexão:** Uma reflexão bem profunda, de 4 a 5 parágrafos, mostrando como Jesus consola, fortalece e guia em situações assim, trazendo esperança e transformação.
-3. **Oração:** Uma oração calorosa e personalizada, convidando Jesus para restaurar, confortar e
+# Função para formatar negrito (convertendo **texto** em <strong>texto</strong>)
+def forma
