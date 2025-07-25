@@ -55,29 +55,37 @@ st.title("🙏 Minha Conversa com Jesus")
 st.markdown("""
 Bem-vindo ao aplicativo **Minha Conversa com Jesus**!
 
-Aqui você pode pedir conselhos e orientações de Jesus para sua vida.
+Aqui você pode pedir orientações para sua vida e receber um devocional e um conselho de Jesus, baseados no seu pedido.
 """)
 
-# ============= SESSÃO: Devocional =================
+# ============= ENTRADA ÚNICA =================
 st.markdown("---")
-st.header("Devocional do Dia")
+st.header("Devocional e Conselho de Jesus para você")
 
-devocional_tema = st.text_input(
-    "Tema ou situação para meditação:",
-    placeholder="Exemplo: Paz interior, Ansiedade, Gratidão..."
+sentimento_user = st.text_area(
+    "Como estou me sentindo hoje. Tema ou situação para meditação:",
+    placeholder="Exemplo: Estou ansioso, busco paz interior. Sinto gratidão. Estou triste e preciso de forças. Quero ser mais paciente..."
 )
 
-if st.button("📖 Gerar Devocional"):
-    if devocional_tema.strip():
-        with st.spinner("Gerando devocional personalizado para você..."):
+if st.button("✨ Gerar Devocional e Conselho de Jesus"):
+    if sentimento_user.strip():
+        with st.spinner("Gerando devocional e conselho de Jesus para você..."):
+            # Prompt para devocional
             prompt_devocional = (
-                f"Crie uma devocional cristã sobre '{devocional_tema.strip()}'. "
+                f"Crie uma devocional cristã sobre '{sentimento_user.strip()}'. "
                 "Divida em três partes: "
                 "1) Texto para meditação (reflexivo, acolhedor, linguagem atual, sem versículos), "
                 "2) Oração (curta, profunda, atual), "
                 "3) Práticas para vida diária (sugestões simples e concretas para viver esse tema)."
             )
+            # Prompt para conselho de Jesus
+            prompt_jesus = (
+                f"Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual, "
+                f"com acolhimento, empatia e sabedoria, sobre: '{sentimento_user.strip()}'. "
+                "Não cite versículos, apenas fale como Jesus falaria hoje, com conselhos amorosos."
+            )
             try:
+                # Chamada para Devocional
                 resposta_devocional = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
@@ -87,49 +95,28 @@ if st.button("📖 Gerar Devocional"):
                     max_tokens=600,
                     temperature=0.85
                 )
-                texto = resposta_devocional.choices[0].message.content.strip()
-                st.success(f"🌅 Devocional:\n\n{texto}")
-            except Exception as e:
-                st.error("❌ Não foi possível obter o devocional agora.")
-                st.info(f"Erro técnico: {str(e)}")
-    else:
-        st.warning("Por favor, escreva um tema para meditação acima.")
+                texto_devocional = resposta_devocional.choices[0].message.content.strip()
 
-# ============= SESSÃO: Conselhos de Jesus =================
-st.markdown("---")
-st.header("Veja os conselhos de Jesus para você")
-
-user_question = st.text_area(
-    "Digite sua dúvida, angústia ou peça um conselho:",
-    placeholder="Exemplo: Estou triste, preciso de forças. Ou: Jesus, como posso ser mais paciente?"
-)
-
-if st.button("🙌 Ouvir conselho de Jesus"):
-    if user_question.strip():
-        with st.spinner("Jesus está pensando na melhor resposta para você..."):
-            prompt = (
-                "Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual, "
-                "com acolhimento, empatia e sabedoria. Não cite versículos, apenas fale como Jesus falaria hoje, "
-                "com conselhos amorosos. Pergunta do usuário: "
-                f"{user_question.strip()}"
-            )
-            try:
-                resposta = openai.ChatCompletion.create(
+                # Chamada para Conselho de Jesus
+                resposta_jesus = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "Você é Jesus, responde em primeira pessoa, com acolhimento e empatia, em linguagem atual."},
-                        {"role": "user", "content": prompt}
+                        {"role": "user", "content": prompt_jesus}
                     ],
                     max_tokens=250,
                     temperature=0.9
                 )
-                conselho = resposta.choices[0].message.content.strip()
-                st.success(f"💬 Jesus responde:\n\n{conselho}")
+                texto_jesus = resposta_jesus.choices[0].message.content.strip()
+
+                st.success(f"🌅 **Devocional:**\n\n{texto_devocional}")
+                st.success(f"💬 **Conselho de Jesus:**\n\n{texto_jesus}")
+
             except Exception as e:
                 st.error("❌ Não foi possível obter a resposta agora.")
                 st.info(f"Erro técnico: {str(e)}")
     else:
-        st.warning("Por favor, escreva sua dúvida ou pedido de conselho acima.")
+        st.warning("Por favor, escreva como está se sentindo ou o tema/situação para meditação.")
 
 # ============= RODAPÉ =================
 st.markdown("---")
