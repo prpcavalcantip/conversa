@@ -6,7 +6,7 @@ client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 st.set_page_config(
     page_title="Minha Conversa com Jesus",
-    page_icon="🙏",
+    page_icon="🕊️",  # Troca do ícone para uma pomba
     layout="centered",
 )
 
@@ -46,7 +46,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🙏 Minha Conversa com Jesus")
+st.title("🕊️ Minha Conversa com Jesus")  # Ícone pomba e apenas traço
 
 st.markdown("""
 Bem-vindo ao aplicativo **Minha Conversa com Jesus**!
@@ -74,7 +74,8 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
             prompt_jesus = (
                 f"Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual, "
                 f"com acolhimento, empatia e sabedoria, sobre: '{sentimento_user.strip()}'. "
-                "Não cite versículos, apenas fale como Jesus falaria hoje, com conselhos amorosos."
+                "Não cite versículos, apenas fale como Jesus falaria hoje, com conselhos amorosos. "
+                "Não utilize a expressão 'querido amigo' ou 'querido(a)'. Vá direto ao conselho, de forma acolhedora e prática."
             )
             try:
                 resposta_devocional = client.chat.completions.create(
@@ -91,11 +92,14 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 resposta_jesus = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "Você é Jesus, responde em primeira pessoa, com acolhimento e empatia, em linguagem atual."},
+                        {"role": "system", "content": (
+                            "Você é Jesus, responde em primeira pessoa, com acolhimento e empatia, em linguagem atual. "
+                            "Não utilize a expressão 'querido amigo' ou 'querido(a)'. Vá direto ao conselho, de forma acolhedora e prática."
+                        )},
                         {"role": "user", "content": prompt_jesus}
                     ],
-                    max_tokens=250,
-                    temperature=0.9
+                    max_tokens=200,
+                    temperature=0.8
                 )
                 texto_jesus = resposta_jesus.choices[0].message.content.strip()
 
@@ -118,7 +122,7 @@ st.markdown(
         <br>
         <span style="font-size:16px">Para ofertar, escaneie o QR Code abaixo ou copie e cole a chave Pix:</span>
         <br><br>
-        <span style="font-size:13px; color:#315c7d; word-break:break-all; background:#fff;padding:7px 12px;border-radius:5px;border:1px solid #a7d8de;display:inline-block;">
+        <span style="font-size:13px; color:#315c7d; word-break:break-all; background:#fff;padding:5px 10px;border-radius:5px;border:1px solid #a7d8de;display:inline-block;">
             00020126360014BR.GOV.BCB.PIX0114+55819983118985204000053039865802BR5924PAULO CAVALCANTI PEREIRA6006RECIFE622605227UlW9vI9m9waJalgNzeJKI63049F25
         </span>
     </div>
