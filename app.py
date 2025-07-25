@@ -108,6 +108,18 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
     else:
         st.warning("Por favor, escreva como está se sentindo hoje.")
 
+# MENSAGEM FINAL DE GRATUIDADE E COMPARTILHAMENTO
+st.markdown(
+    """
+    <div style="margin:32px 0 16px 0; padding:18px; background:#e6f7fa; border-radius:8px; border:1px solid #a7d8de;">
+        <strong>Esse aplicativo será sempre grátis.</strong><br>
+        Se você for tocado por Deus, compartilhe este app com quem está precisando.<br>
+        Também, se desejar, você pode fazer uma oferta de qualquer valor para ajudar o ministério.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown("---")
 st.markdown(
     '<a href="https://wa.me/5581998311898" target="_blank">'
