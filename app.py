@@ -70,4 +70,37 @@ css = """
     .stImage>img {
         border: 2px solid #DDD;
         border-radius: 8px;
-   
+    }
+</style>
+"""
+st.markdown(css, unsafe_allow_html=True)
+
+# Título
+st.markdown("<div class='titulo'>🕊️ Minha Conversa com Jesus</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitulo'>Como você está se sentindo hoje?</div>", unsafe_allow_html=True)
+
+# Entrada do usuário
+feeling = st.text_input("Descreva em poucas palavras seu estado emocional:")
+
+# Função para gerar devocional
+def gerar_devocional(sentimento):
+    if not sentimento.strip():
+        return "Por favor, descreva seu estado emocional para gerar o devocional."
+    
+    prompt = f"""
+    Você é um devocionalista cristão. Crie uma devocional profunda e detalhada com base nas palavras de Jesus, considerando o sentimento descrito: \"{sentimento}\". 
+    A devocional deve conter:
+    - Um versículo bíblico dito por Jesus, diretamente citado dos evangelhos;
+    - Uma reflexão profunda e acolhedora sobre o sentimento à luz da fé cristã, conectando-o com os ensinamentos de Jesus;
+    - Uma oração inspiradora e pessoal, que reflita o sentimento do usuário;
+    - Duas sugestões específicas de práticas diárias para fortalecer a fé, adaptadas ao contexto emocional;
+    - Uma seção chamada 'Conselhos de Jesus para você', onde Jesus fala diretamente ao usuário em primeira pessoa, em linguagem atual e amigável, baseado nos evangelhos (ex.: Mateus, Marcos, Lucas, João), oferecendo conselhos pessoais e práticos para o dia a dia.
+    Seja pastoral, profundamente bíblico e sensível ao estado emocional do usuário.
+    """
+    try:
+        resposta = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Você é um devocionalista cristão, acolhedor, bíblico e sensível às emoções humanas."},
+                {"role": "user", "content": prompt}
+           
