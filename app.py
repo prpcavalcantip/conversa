@@ -10,22 +10,28 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="🙏", layout="centered")
 st.markdown("""
     <style>
+        body {
+            background-color: #fefefe;
+        }
         .titulo {
-            font-size: 36px;
+            font-size: 38px;
             font-weight: bold;
             color: #4B0082;
             text-align: center;
+            margin-top: 20px;
         }
         .subtitulo {
             font-size: 20px;
-            color: #555;
+            color: #444;
             text-align: center;
+            margin-bottom: 30px;
         }
         .caixa {
-            background-color: #f2f2f2;
+            background-color: #ffffff;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
         .botao {
             background-color: #4B0082;
@@ -39,14 +45,13 @@ st.markdown("""
             text-align: center;
             font-size: 14px;
             color: gray;
-            margin-top: 20px;
+            margin-top: 30px;
         }
     </style>
 """, unsafe_allow_html=True)
 
 # Título
 st.markdown("<div class='titulo'>🙏 Minha Conversa com Jesus</div>", unsafe_allow_html=True)
-
 st.markdown("<div class='subtitulo'>Como você está se sentindo hoje?</div>", unsafe_allow_html=True)
 
 # Entrada do usuário
@@ -56,7 +61,7 @@ with st.container():
 # Função para gerar devocional
 def gerar_devocional(sentimento):
     prompt = f"""
-    Você é um devocionalista cristão. Crie uma devocional profunda com base nas palavras de Jesus, considerando o sentimento descrito: "{sentimento}". 
+    Você é um devocionalista cristão. Crie uma devocional profunda com base nas palavras de Jesus, considerando o sentimento descrito: \"{sentimento}\". 
     A devocional deve conter:
     - Um versículo bíblico dito por Jesus;
     - Uma breve reflexão sobre o sentimento à luz da fé cristã;
@@ -72,26 +77,54 @@ def gerar_devocional(sentimento):
             {"role": "user", "content": prompt}
         ],
         temperature=0.7,
-        max_tokens=800
+        max_tokens=1000
     )
     return resposta.choices[0].message.content
 
-# Geração
+# Função para recado de Jesus
+def recado_de_jesus():
+    prompt = """
+    Fale como se fosse Jesus, em primeira pessoa. Traga uma mensagem curta, acolhedora, e cheia de esperança baseada nas palavras e ensinos que estão nos evangelhos. Seja pessoal, como se Jesus estivesse falando diretamente ao coração da pessoa que está lendo.
+    """
+    resposta = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Você está interpretando Jesus Cristo de forma fiel ao Novo Testamento."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=300
+    )
+    return resposta.choices[0].message.content
+
+# Gerar devocional
 if st.button("✨ Gerar Devocional", key="botao_gerar"):
     if feeling:
         with st.spinner("Gerando sua devocional..."):
             try:
                 devocional = gerar_devocional(feeling)
                 st.markdown("---")
-                st.markdown(devocional)
+                st.subheader("🕊️ Devocional do Dia")
+                st.markdown(f"<div class='caixa'>{devocional}</div>", unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Ocorreu um erro ao gerar a devocional: {e}")
     else:
         st.warning("Por favor, descreva como está se sentindo.")
 
+# Nova seção: Recado de Jesus
+st.markdown("---")
+st.subheader("📖 Um recado de Jesus para você")
+if st.button("📰 Ouvir a voz do Mestre", key="botao_recado"):
+    with st.spinner("Jesus está te respondendo..."):
+        try:
+            mensagem = recado_de_jesus()
+            st.markdown(f"<div class='caixa'>{mensagem}</div>", unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"Erro ao gerar o recado: {e}")
+
 # Mensagem de apoio
 st.markdown("---")
-st.subheader("🙌 Este aplicativo sempre será gratuito.")
+st.subheader("🤝 Este aplicativo sempre será gratuito.")
 st.markdown("Se ele te abençoou, compartilhe com mais alguém.")
 st.markdown("Se desejar, você pode fazer uma doação de qualquer valor. Deus te abençoe!")
 
