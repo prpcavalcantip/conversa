@@ -136,4 +136,8 @@ st.markdown("---")
 st.markdown(
     '<a href="https://wa.me/5581998311898" target="_blank">'
     '<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="28" style="vertical-align:middle;margin-right:12px"/>'
-    '<span style="font-size:18px;vertical-align:middle;">Fale no WhatsApp:
+    '<span style="font-size:18px;vertical-align:middle;">Fale no WhatsApp: <strong>81998311898</strong></span>'
+    '</a>',
+    unsafe_allow_html=True
+)
+st.caption("Desenvolvido com carinho e tecnologia para você. © 2024 Minha Conversa com Jesus")
