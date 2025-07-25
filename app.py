@@ -80,11 +80,4 @@ def gerar_devocional(sentimento):
     - Uma reflexão longa, acolhedora e teologicamente profunda sobre o sentimento, conectando-o detalhadamente com os ensinamentos e a vida de Jesus nos evangelhos;
     - Uma oração inspiradora, longa e pessoal, que reflita profundamente o sentimento do usuário e peça orientação divina;
     - Três sugestões específicas e práticas de atividades diárias para fortalecer a fé, adaptadas ao contexto emocional e baseadas nos ensinamentos de Jesus;
-    - Uma seção chamada 'Conselhos de Jesus para você', onde Jesus fala diretamente ao usuário em primeira pessoa, chamando-o de 'filho', em linguagem atual, amigável e baseada nos evangelhos (ex.: Mateus, Marcos, Lucas, João), oferecendo conselhos pessoais, práticos e encorajadores para o dia a dia.
-    Seja pastoral, profundamente bíblico, sensível ao estado emocional do usuário e evite superficialidade.
-    """
-    try:
-        resposta = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Você é um devocionalista cristão,
+    - Uma seção chamada 'Conselhos de Jesus para você', onde Jesus fala diretamente ao usuário em primeira pessoa, chamando-o de 'filho', em linguagem atual, am
