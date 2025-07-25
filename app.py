@@ -1,20 +1,15 @@
 import streamlit as st
 import openai
 
-# Pegando a chave OpenAI dos secrets do Streamlit Cloud
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-
-# Novo cliente OpenAI para API 1.x
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
-# =========== TEMA VISUAL PROFISSIONAL ===============
 st.set_page_config(
     page_title="Minha Conversa com Jesus",
     page_icon="🙏",
     layout="centered",
 )
 
-# Customização CSS
 st.markdown("""
     <style>
     body, .main {
@@ -51,7 +46,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# =================== APP PRINCIPAL ====================
 st.title("🙏 Minha Conversa com Jesus")
 
 st.markdown("""
@@ -60,19 +54,16 @@ Bem-vindo ao aplicativo **Minha Conversa com Jesus**!
 Aqui você pode pedir orientações para sua vida e receber um devocional e um conselho de Jesus, baseados no seu pedido.
 """)
 
-# ============= ENTRADA ÚNICA =================
 st.markdown("---")
-st.header("Como estou me sentindo hoje")
 
 sentimento_user = st.text_area(
-    "Descreva como você está se sentindo hoje:",
+    "Como estou me sentindo hoje:",
     placeholder="Exemplo: Estou ansioso, busco paz interior. Sinto gratidão. Estou triste e preciso de forças. Quero ser mais paciente..."
 )
 
 if st.button("✨ Gerar Devocional e Conselho de Jesus"):
     if sentimento_user.strip():
         with st.spinner("Gerando devocional e conselho de Jesus para você..."):
-            # Prompt para devocional
             prompt_devocional = (
                 f"Crie uma devocional cristã sobre '{sentimento_user.strip()}'. "
                 "Divida em três partes: "
@@ -80,14 +71,12 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 "2) Oração (curta, profunda, atual), "
                 "3) Práticas para vida diária (sugestões simples e concretas para viver esse tema)."
             )
-            # Prompt para conselho de Jesus
             prompt_jesus = (
                 f"Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual, "
                 f"com acolhimento, empatia e sabedoria, sobre: '{sentimento_user.strip()}'. "
                 "Não cite versículos, apenas fale como Jesus falaria hoje, com conselhos amorosos."
             )
             try:
-                # Chamada para Devocional
                 resposta_devocional = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
@@ -99,7 +88,6 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 )
                 texto_devocional = resposta_devocional.choices[0].message.content.strip()
 
-                # Chamada para Conselho de Jesus
                 resposta_jesus = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
@@ -118,9 +106,8 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 st.error("❌ Não foi possível obter a resposta agora.")
                 st.info(f"Erro técnico: {str(e)}")
     else:
-        st.warning("Por favor, descreva como está se sentindo hoje.")
+        st.warning("Por favor, escreva como está se sentindo hoje.")
 
-# ============= RODAPÉ =================
 st.markdown("---")
 st.markdown(
     '<a href="https://wa.me/5581998311898" target="_blank">'
