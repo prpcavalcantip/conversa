@@ -80,4 +80,60 @@ def gerar_devocional(sentimento):
     - Uma reflexão longa, acolhedora e teologicamente profunda sobre o sentimento, conectando-o detalhadamente com os ensinamentos e a vida de Jesus nos evangelhos;
     - Uma oração inspiradora, longa e pessoal, que reflita profundamente o sentimento do usuário e peça orientação divina;
     - Três sugestões específicas e práticas de atividades diárias para fortalecer a fé, adaptadas ao contexto emocional e baseadas nos ensinamentos de Jesus;
-    - Uma seção chamada 'Conselhos de Jesus para você', onde Jesus fala diretamente ao usuário em primeira pessoa, chamando-o de 'filho', em linguagem atual, am
+    - Uma seção chamada 'Conselhos de Jesus para você', onde Jesus fala diretamente ao usuário em primeira pessoa, chamando-o de 'filho', em linguagem atual, amigável e baseada nos evangelhos (ex.: Mateus, Marcos, Lucas, João), oferecendo conselhos pessoais, práticos e encorajadores para o dia a dia.
+    Seja pastoral, profundamente bíblico, sensível ao estado emocional do usuário e evite superficialidade.
+    """
+    try:
+        resposta = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Você é um devocionalista cristão, acolhedor, bíblico, sensível às emoções humanas e teologicamente profundo."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1000,
+            temperature=0.7
+        )
+        return resposta.choices[0].message.content
+    except Exception as e:
+        return f"Erro ao gerar devocional: {str(e)}"
+
+# Botão para gerar devocional
+if st.button("✨ Gerar Devocional", key="botao_gerar"):
+    if feeling:
+        with st.spinner("Gerando sua devocional..."):
+            try:
+                devocional = gerar_devocional(feeling)
+                st.markdown("---")
+                st.markdown(devocional, unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Ocorreu um erro ao gerar a devocional: {e}")
+    else:
+        st.warning("Por favor, descreva como está se sentindo.")
+
+# Seção de doação
+st.markdown("---")
+st.markdown("<div class='doacao'>", unsafe_allow_html=True)
+st.markdown("🙌 Este aplicativo sempre será gratuito. Se ele te abençoou, compartilhe com mais alguém.", unsafe_allow_html=True)
+st.markdown("Se desejar, você pode fazer uma doação de qualquer valor. Deus te abençoe!", unsafe_allow_html=True)
+
+# Pix e QR Code
+col1, col2 = st.columns([1, 2])
+with col1:
+    try:
+        qr_path = "QRCODE.jpeg"
+        if os.path.exists(qr_path):
+            qr_img = Image.open(qr_path)
+            st.image(qr_img, caption="Doe via Pix", width=200)
+        else:
+            st.warning("QR Code não encontrado. Envie o arquivo novamente.")
+    except Exception as e:
+        st.error(f"Erro ao carregar QR Code: {e}")
+with col2:
+    st.markdown("**Chave Pix (copia e cola):**")
+    chave_pix = "00020126360014BR.GOV.BCB.PIX0114+55819983118985204000053039865802BR5924PAULO CAVALCANTI PEREIRA6006RECIFE622605227UlW9vI9m9waJalgNzeJKI63049F25"
+    st.code(chave_pix, language="text")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Rodapé
+st.markdown("<footer>Feito ❤️ pelo Pastor Paulo Cavalcanti.</footer>", unsafe_allow_html=True)
