@@ -62,10 +62,10 @@ Aqui você pode pedir orientações para sua vida e receber um devocional e um c
 
 # ============= ENTRADA ÚNICA =================
 st.markdown("---")
-st.header("Devocional e Conselho de Jesus para você")
+st.header("Como estou me sentindo hoje")
 
 sentimento_user = st.text_area(
-    "Como estou me sentindo hoje. Tema ou situação para meditação:",
+    "Como estou me sentindo hoje:",
     placeholder="Exemplo: Estou ansioso, busco paz interior. Sinto gratidão. Estou triste e preciso de forças. Quero ser mais paciente..."
 )
 
@@ -118,7 +118,7 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 st.error("❌ Não foi possível obter a resposta agora.")
                 st.info(f"Erro técnico: {str(e)}")
     else:
-        st.warning("Por favor, escreva como está se sentindo ou o tema/situação para meditação.")
+        st.warning("Por favor, escreva como está se sentindo hoje.")
 
 # ============= RODAPÉ =================
 st.markdown("---")
