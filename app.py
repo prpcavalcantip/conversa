@@ -1,116 +1,133 @@
 import streamlit as st
-import os
-from PIL import Image
-from openai import OpenAI
+import mercadopago
+import openai  # Você pode usar outra API se preferir
 
-# Inicializar cliente OpenAI com a chave do Streamlit Secrets
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# =================== CONFIGURAÇÕES ======================
+ACCESS_TOKEN = "APP_USR-9f409612-b346-4437-a1d7-33589ad29133"
+PLANO_ID = "dadca597a91f47be81a6133103eacfa5"
+OPENAI_API_KEY = "sua-openai-key"  # Insira aqui sua chave da OpenAI
+openai.api_key = OPENAI_API_KEY
 
-# Layout e estilo
-st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="🙏", layout="centered")
+# =========== TEMA VISUAL PROFISSIONAL ===============
+st.set_page_config(
+    page_title="Assinatura - Minha Conversa com Jesus",
+    page_icon="🙏",
+    layout="centered",
+    initial_sidebar_state="auto"
+)
+
+# Customização CSS
 st.markdown("""
     <style>
-        .titulo {
-            font-size: 36px;
-            font-weight: bold;
-            color: #4B0082;
-            text-align: center;
-        }
-        .subtitulo {
-            font-size: 20px;
-            color: #555;
-            text-align: center;
-        }
-        .caixa {
-            background-color: #f2f2f2;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-        }
-        .botao {
-            background-color: #4B0082;
-            color: white;
-            font-size: 18px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-        }
-        footer {
-            text-align: center;
-            font-size: 14px;
-            color: gray;
-            margin-top: 20px;
-        }
+    body, .main {
+        background: linear-gradient(120deg, #f7fafc 0%, #c9e6ff 100%);
+    }
+    .stTextInput>div>div>input {
+        border-radius: 6px;
+        border: 1.5px solid #4682b4;
+        background: #f0f8ff;
+        color: #222;
+        font-size: 18px;
+        padding: 8px;
+    }
+    .stButton>button, .stButton>button:focus {
+        background-color: #4682b4 !important;
+        color: #fff !important;
+        border-radius: 6px;
+        padding: 8px 36px;
+        font-weight: bold;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0px 2px 8px #4682b41a;
+    }
+    .stButton>button:hover {
+        background-color: #315c7d !important;
+    }
+    .stAlert, .stSuccess, .stError {
+        border-radius: 6px;
+    }
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        color: #315c7d;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# Título
-st.markdown("<div class='titulo'>🙏 Minha Conversa com Jesus</div>", unsafe_allow_html=True)
+# =================== APP PRINCIPAL ====================
 
-st.markdown("<div class='subtitulo'>Como você está se sentindo hoje?</div>", unsafe_allow_html=True)
+st.title("🙏 Minha Conversa com Jesus")
 
-# Entrada do usuário
-with st.container():
-    feeling = st.text_input("Descreva em poucas palavras seu estado emocional:")
+st.markdown("""
+Bem-vindo ao aplicativo **Minha Conversa com Jesus**!
 
-# Função para gerar devocional
-def gerar_devocional(sentimento):
-    prompt = f"""
-    Você é um devocionalista cristão. Crie uma devocional profunda com base nas palavras de Jesus, considerando o sentimento descrito: "{sentimento}". 
-    A devocional deve conter:
-    - Um versículo bíblico dito por Jesus;
-    - Uma breve reflexão sobre o sentimento à luz da fé cristã;
-    - Uma oração inspiradora;
-    - Duas sugestões de práticas diárias para fortalecer a fé.
-    Seja acolhedor, pastoral e profundamente bíblico.
-    """
+Para acessar o conteúdo completo, faça sua assinatura:
+""")
 
-    resposta = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Você é um devocionalista cristão."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=800
-    )
-    return resposta.choices[0].message.content
+# Coleta o e-mail do usuário
+email = st.text_input("📧 Digite seu e-mail:")
 
-# Geração
-if st.button("✨ Gerar Devocional", key="botao_gerar"):
-    if feeling:
-        with st.spinner("Gerando sua devocional..."):
-            try:
-                devocional = gerar_devocional(feeling)
-                st.markdown("---")
-                st.markdown(devocional)
-            except Exception as e:
-                st.error(f"Ocorreu um erro ao gerar a devocional: {e}")
-    else:
-        st.warning("Por favor, descreva como está se sentindo.")
-
-# Mensagem de apoio
-st.markdown("---")
-st.subheader("🙌 Este aplicativo sempre será gratuito.")
-st.markdown("Se ele te abençoou, compartilhe com mais alguém.")
-st.markdown("Se desejar, você pode fazer uma doação de qualquer valor. Deus te abençoe!")
-
-# Pix e QR Code
-col1, col2 = st.columns([1, 2])
-with col1:
+if st.button("📝 Assinar Agora") and email:
     try:
-        qr_path = "QRCODE.jpeg"
-        if os.path.exists(qr_path):
-            qr_img = Image.open(qr_path)
-            st.image(qr_img, caption="Doe via Pix", width=200)
-        else:
-            st.warning("QR Code não encontrado. Envie o arquivo novamente.")
-    except Exception as e:
-        st.error(f"Erro ao carregar QR Code: {e}")
-with col2:
-    st.markdown("**Chave Pix (copia e cola):**")
-    chave_pix = "00020126360014BR.GOV.BCB.PIX0114+55819983118985204000053039865802BR5924PAULO CAVALCANTI PEREIRA6006RECIFE622605227UlW9vI9m9waJalgNzeJKI63049F25"
-    st.code(chave_pix, language="text")
+        # Cria a assinatura no Mercado Pago
+        sdk = mercadopago.SDK(ACCESS_TOKEN)
+        assinatura = sdk.preapproval().create({
+            "preapproval_plan_id": PLANO_ID,
+            "payer_email": email,
+            "back_url": "https://seusite.com/obrigado",
+            "notification_url": "https://seusite.com/webhook"
+        })
 
-# Rodapé
-st.markdown("""<footer>Feito ❤️ pelo Pastor Paulo Cavalcanti.</footer>""", unsafe_allow_html=True)
+        init_point = assinatura.get('response', {}).get('init_point')
+        if init_point:
+            st.success("✅ Pronto! Clique no link abaixo para finalizar:")
+            st.markdown(f"[Ir para o Pagamento]({init_point})", unsafe_allow_html=True)
+        else:
+            st.error("❌ Ocorreu um erro ao gerar o link de pagamento.")
+            st.info(f"Detalhes da resposta do Mercado Pago: {assinatura.get('response')}")
+    except Exception as e:
+        st.error(f"❌ Ocorreu um erro: {str(e)}")
+        st.info("Por favor, tente novamente ou entre em contato com nosso suporte.")
+
+# ============= NOVA SESSÃO: Conselhos de Jesus =================
+st.markdown("---")
+st.header("Veja os conselhos de Jesus para você")
+
+user_question = st.text_area(
+    "Digite sua dúvida, angústia ou peça um conselho:",
+    placeholder="Exemplo: Estou triste, preciso de forças. Ou: Jesus, como posso ser mais paciente?"
+)
+
+if st.button("🙌 Ouvir conselho de Jesus"):
+    if user_question.strip():
+        with st.spinner("Jesus está pensando na melhor resposta para você..."):
+            # Chamada à OpenAI (ChatGPT) para resposta em linguagem atual e primeira pessoa
+            prompt = (
+                "Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual, "
+                "com acolhimento, empatia e sabedoria. Não cite versículos, apenas fale como Jesus falaria hoje, "
+                "com conselhos amorosos. Pergunta do usuário: "
+                f"{user_question.strip()}"
+            )
+            try:
+                resposta = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "Você é Jesus, responde em primeira pessoa, com acolhimento e empatia, em linguagem atual."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=250,
+                    temperature=0.9
+                )
+                conselho = resposta.choices[0].message.content.strip()
+                st.success(f"💬 Jesus responde:\n\n{conselho}")
+            except Exception as e:
+                st.error("❌ Não foi possível obter a resposta agora.")
+                st.info(f"Erro técnico: {str(e)}")
+    else:
+        st.warning("Por favor, escreva sua dúvida ou pedido de conselho acima.")
+
+# ============= RODAPÉ =================
+st.markdown("---")
+st.write("Dúvidas? Entre em contato: contato@seusite.com")
+
+# ============= FINAL ================
+st.caption("Desenvolvido com carinho e tecnologia para você. © 2024 Minha Conversa com Jesus")
