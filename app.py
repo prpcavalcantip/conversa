@@ -103,4 +103,24 @@ def gerar_devocional(sentimento):
             messages=[
                 {"role": "system", "content": "Você é um devocionalista cristão, acolhedor, bíblico e sensível às emoções humanas."},
                 {"role": "user", "content": prompt}
-           
+            ],
+            max_tokens=700,
+            temperature=0.7
+        )
+        return resposta.choices[0].message.content
+    except Exception as e:
+        return f"Erro ao gerar devocional: {str(e)}"
+
+# Botão para gerar devocional
+if st.button("Gerar Devocional"):
+    if feeling:
+        with st.spinner("Gerando seu devocional..."):
+            devocional = gerar_devocional(feeling)
+            st.markdown("<div class='caixa'>", unsafe_allow_html=True)
+            st.markdown(devocional, unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        st.warning("Por favor, insira seu estado emocional antes de gerar o devocional.")
+
+# Rodapé
+st.markdown("<footer>Desenvolvido com ❤️ para fortalecer sua fé</footer>", unsafe_allow_html=True)
