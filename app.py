@@ -3,7 +3,9 @@ import openai
 
 # Pegando a chave OpenAI dos secrets do Streamlit Cloud
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-openai.api_key = OPENAI_API_KEY
+
+# Novo cliente OpenAI para API 1.x
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 # =========== TEMA VISUAL PROFISSIONAL ===============
 st.set_page_config(
@@ -86,7 +88,7 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
             )
             try:
                 # Chamada para Devocional
-                resposta_devocional = openai.ChatCompletion.create(
+                resposta_devocional = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "Você é um pastor cristão, acolhedor, reflexivo, atual, simples e prático."},
@@ -98,7 +100,7 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 texto_devocional = resposta_devocional.choices[0].message.content.strip()
 
                 # Chamada para Conselho de Jesus
-                resposta_jesus = openai.ChatCompletion.create(
+                resposta_jesus = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "Você é Jesus, responde em primeira pessoa, com acolhimento e empatia, em linguagem atual."},
