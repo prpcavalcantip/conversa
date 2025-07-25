@@ -69,3 +69,4 @@ feeling = st.text_input("Descreva em poucas palavras seu estado emocional:")
 
 # Função para gerar devocional
 def gerar_devocional(sentimento):
+    pass  # Corpo mínimo para evitar erro de sintaxe
