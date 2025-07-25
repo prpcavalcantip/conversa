@@ -65,7 +65,7 @@ st.markdown("---")
 st.header("Como estou me sentindo hoje")
 
 sentimento_user = st.text_area(
-    "Como estou me sentindo hoje:",
+    "Descreva como você está se sentindo hoje:",
     placeholder="Exemplo: Estou ansioso, busco paz interior. Sinto gratidão. Estou triste e preciso de forças. Quero ser mais paciente..."
 )
 
@@ -118,7 +118,7 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 st.error("❌ Não foi possível obter a resposta agora.")
                 st.info(f"Erro técnico: {str(e)}")
     else:
-        st.warning("Por favor, escreva como está se sentindo hoje.")
+        st.warning("Por favor, descreva como está se sentindo hoje.")
 
 # ============= RODAPÉ =================
 st.markdown("---")
