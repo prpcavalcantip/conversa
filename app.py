@@ -58,6 +58,43 @@ Bem-vindo ao aplicativo **Minha Conversa com Jesus**!
 Aqui você pode pedir conselhos e orientações de Jesus para sua vida.
 """)
 
+# ============= SESSÃO: Devocional =================
+st.markdown("---")
+st.header("Devocional do Dia")
+
+devocional_tema = st.text_input(
+    "Tema ou situação para meditação:",
+    placeholder="Exemplo: Paz interior, Ansiedade, Gratidão..."
+)
+
+if st.button("📖 Gerar Devocional"):
+    if devocional_tema.strip():
+        with st.spinner("Gerando devocional personalizado para você..."):
+            prompt_devocional = (
+                f"Crie uma devocional cristã sobre '{devocional_tema.strip()}'. "
+                "Divida em três partes: "
+                "1) Texto para meditação (reflexivo, acolhedor, linguagem atual, sem versículos), "
+                "2) Oração (curta, profunda, atual), "
+                "3) Práticas para vida diária (sugestões simples e concretas para viver esse tema)."
+            )
+            try:
+                resposta_devocional = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "Você é um pastor cristão, acolhedor, reflexivo, atual, simples e prático."},
+                        {"role": "user", "content": prompt_devocional}
+                    ],
+                    max_tokens=600,
+                    temperature=0.85
+                )
+                texto = resposta_devocional.choices[0].message.content.strip()
+                st.success(f"🌅 Devocional:\n\n{texto}")
+            except Exception as e:
+                st.error("❌ Não foi possível obter o devocional agora.")
+                st.info(f"Erro técnico: {str(e)}")
+    else:
+        st.warning("Por favor, escreva um tema para meditação acima.")
+
 # ============= SESSÃO: Conselhos de Jesus =================
 st.markdown("---")
 st.header("Veja os conselhos de Jesus para você")
@@ -96,5 +133,7 @@ if st.button("🙌 Ouvir conselho de Jesus"):
 
 # ============= RODAPÉ =================
 st.markdown("---")
-st.write("Dúvidas? Entre em contato: contato@seusite.com")
-st.caption("Desenvolvido com carinho e tecnologia para você. © 2024 Minha Conversa com Jesus")
+st.markdown(
+    '<a href="https://wa.me/5581998311898" target="_blank">'
+    '<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="28" style="vertical-align:middle;margin-right:12px"/>'
+    '<span style="font-size:18px;vertical-align:middle;">Fale no WhatsApp:
