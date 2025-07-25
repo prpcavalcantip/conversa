@@ -3,18 +3,18 @@ import os
 from PIL import Image
 from openai import OpenAI
 
-# Inicializar cliente OpenAI com a chave do Streamlit Secrets
+# Verifica chave da API
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 except KeyError:
     st.error("Erro: Chave da API OpenAI não encontrada. Configure-a em st.secrets.")
     st.stop()
 
-# Layout e estilo
+# Configuração da página
 st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="🕊️", layout="centered")
 
 # Estilo CSS
-css = """
+css = '''
 <style>
     .stApp {
         background-color: #FFFFFF;
@@ -57,61 +57,15 @@ css = """
         color: #2D2A32;
     }
 </style>
-"""
+'''
 st.markdown(css, unsafe_allow_html=True)
 
 # Título
 st.markdown("<div class='titulo'>🕊️ Minha Conversa com Jesus</div>", unsafe_allow_html=True)
 st.markdown("<div class='subtitulo'>Como você está se sentindo hoje?</div>", unsafe_allow_html=True)
 
-# Entrada do usuário
-with st.container():
-    feeling = st.text_input("Descreva em poucas palavras seu estado emocional:")
+# Entrada do sentimento
+feeling = st.text_input("Descreva em poucas palavras seu estado emocional:")
 
 # Função para gerar devocional
 def gerar_devocional(sentimento):
-    if not sentimento.strip():
-        return "Por favor, descreva seu estado emocional para gerar o devocional."
-
-    prompt = f"""Você é um devocionalista cristão. Crie uma devocional profundamente rica e detalhada com base nas palavras de Jesus, considerando o sentimento descrito: "{sentimento}". 
-A devocional deve conter:
-- Um versículo bíblico dito por Jesus, diretamente citado dos evangelhos, com referência clara (ex.: Mateus 11:28);
-- Uma reflexão longa, acolhedora e teologicamente profunda sobre o sentimento, conectando-o detalhadamente com os ensinamentos e a vida de Jesus nos evangelhos;
-- Uma oração inspiradora, longa e pessoal, que reflita profundamente o sentimento do usuário e peça orientação divina;
-- Três sugestões específicas e práticas de atividades diárias para fortalecer a fé, adaptadas ao contexto emocional e baseadas nos ensinamentos de Jesus;
-- Uma seção chamada 'Conselhos de Jesus para você', onde Jesus fala diretamente ao usuário em primeira pessoa, chamando-o de 'filho', em linguagem atual, amigável e baseada nos evangelhos (ex.: Mateus, Marcos, Lucas, João), oferecendo conselhos pessoais, práticos e encorajadores para o dia a dia.
-
-Seja pastoral, profundamente bíblico, sensível ao estado emocional do usuário e evite superficialidade."""
-
-    try:
-        resposta = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Você é um devocionalista cristão, acolhedor, bíblico, sensível às emoções humanas e teologicamente profundo."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=1000,
-            temperature=0.7
-        )
-        return resposta.choices[0].message.content
-    except Exception as e:
-        return f"Erro ao gerar devocional: {str(e)}"
-
-# Botão para gerar devocional
-if st.button("✨ Gerar Devocional", key="botao_gerar"):
-    if feeling:
-        with st.spinner("Gerando sua devocional..."):
-            try:
-                devocional = gerar_devocional(feeling)
-                st.markdown("---")
-                st.markdown(devocional, unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"Ocorreu um erro ao gerar a devocional: {e}")
-    else:
-        st.warning("Por favor, descreva como está se sentindo.")
-
-# Seção de doação
-st.markdown("---")
-st.markdown("<div class='doacao'>", unsafe_allow_html=True)
-st.markdown("🙌 Este aplicativo sempre será gratuito. Se ele te abençoou, compartilhe com mais alguém.", unsafe_allow_html=True)
-st.markdown("Se desejar, você pode fazer uma doação de qualque
