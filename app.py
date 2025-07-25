@@ -1,19 +1,15 @@
 import streamlit as st
-import mercadopago
-import openai  # Você pode usar outra API se preferir
+import openai
 
-# =================== CONFIGURAÇÕES ======================
-ACCESS_TOKEN = "APP_USR-9f409612-b346-4437-a1d7-33589ad29133"
-PLANO_ID = "dadca597a91f47be81a6133103eacfa5"
-OPENAI_API_KEY = "sua-openai-key"  # Insira aqui sua chave da OpenAI
+# Pegando a chave OpenAI dos secrets do Streamlit Cloud
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 openai.api_key = OPENAI_API_KEY
 
 # =========== TEMA VISUAL PROFISSIONAL ===============
 st.set_page_config(
-    page_title="Assinatura - Minha Conversa com Jesus",
+    page_title="Minha Conversa com Jesus",
     page_icon="🙏",
     layout="centered",
-    initial_sidebar_state="auto"
 )
 
 # Customização CSS
@@ -22,7 +18,7 @@ st.markdown("""
     body, .main {
         background: linear-gradient(120deg, #f7fafc 0%, #c9e6ff 100%);
     }
-    .stTextInput>div>div>input {
+    .stTextInput>div>div>input, .stTextArea textarea {
         border-radius: 6px;
         border: 1.5px solid #4682b4;
         background: #f0f8ff;
@@ -54,41 +50,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =================== APP PRINCIPAL ====================
-
 st.title("🙏 Minha Conversa com Jesus")
 
 st.markdown("""
 Bem-vindo ao aplicativo **Minha Conversa com Jesus**!
 
-Para acessar o conteúdo completo, faça sua assinatura:
+Aqui você pode pedir conselhos e orientações de Jesus para sua vida.
 """)
 
-# Coleta o e-mail do usuário
-email = st.text_input("📧 Digite seu e-mail:")
-
-if st.button("📝 Assinar Agora") and email:
-    try:
-        # Cria a assinatura no Mercado Pago
-        sdk = mercadopago.SDK(ACCESS_TOKEN)
-        assinatura = sdk.preapproval().create({
-            "preapproval_plan_id": PLANO_ID,
-            "payer_email": email,
-            "back_url": "https://seusite.com/obrigado",
-            "notification_url": "https://seusite.com/webhook"
-        })
-
-        init_point = assinatura.get('response', {}).get('init_point')
-        if init_point:
-            st.success("✅ Pronto! Clique no link abaixo para finalizar:")
-            st.markdown(f"[Ir para o Pagamento]({init_point})", unsafe_allow_html=True)
-        else:
-            st.error("❌ Ocorreu um erro ao gerar o link de pagamento.")
-            st.info(f"Detalhes da resposta do Mercado Pago: {assinatura.get('response')}")
-    except Exception as e:
-        st.error(f"❌ Ocorreu um erro: {str(e)}")
-        st.info("Por favor, tente novamente ou entre em contato com nosso suporte.")
-
-# ============= NOVA SESSÃO: Conselhos de Jesus =================
+# ============= SESSÃO: Conselhos de Jesus =================
 st.markdown("---")
 st.header("Veja os conselhos de Jesus para você")
 
@@ -100,7 +70,6 @@ user_question = st.text_area(
 if st.button("🙌 Ouvir conselho de Jesus"):
     if user_question.strip():
         with st.spinner("Jesus está pensando na melhor resposta para você..."):
-            # Chamada à OpenAI (ChatGPT) para resposta em linguagem atual e primeira pessoa
             prompt = (
                 "Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual, "
                 "com acolhimento, empatia e sabedoria. Não cite versículos, apenas fale como Jesus falaria hoje, "
@@ -128,6 +97,4 @@ if st.button("🙌 Ouvir conselho de Jesus"):
 # ============= RODAPÉ =================
 st.markdown("---")
 st.write("Dúvidas? Entre em contato: contato@seusite.com")
-
-# ============= FINAL ================
 st.caption("Desenvolvido com carinho e tecnologia para você. © 2024 Minha Conversa com Jesus")
