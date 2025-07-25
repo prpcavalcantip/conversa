@@ -116,14 +116,18 @@ st.markdown(
         Se você for tocado por Deus, compartilhe este app com quem está precisando.<br>
         Também, se desejar, você pode fazer uma oferta de qualquer valor para ajudar o ministério.<br>
         <br>
-        <span style="font-size:16px">Para ofertar, escaneie o QR Code abaixo:</span>
+        <span style="font-size:16px">Para ofertar, escaneie o QR Code abaixo ou copie e cole a chave Pix:</span>
+        <br><br>
+        <span style="font-size:15px; color:#315c7d; word-break:break-all; background:#fff;padding:7px 12px;border-radius:5px;border:1px solid #a7d8de;display:inline-block;">
+            00020126360014BR.GOV.BCB.PIX0114+55819983118985204000053039865802BR5924PAULO CAVALCANTI PEREIRA6006RECIFE622605227UlW9vI9m9waJalgNzeJKI63049F25
+        </span>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# EXIBE O QR CODE
-st.image("QRCODE.jpeg", caption="Faça sua oferta escaneando o QR Code", use_column_width=True)
+# EXIBE O QR CODE (ajustado)
+st.image("QRCODE.jpeg", caption="Faça sua oferta escaneando o QR Code", width=200, use_container_width=True)
 
 st.markdown("---")
 st.markdown(
