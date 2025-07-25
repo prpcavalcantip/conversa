@@ -7,51 +7,87 @@ from openai import OpenAI
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Layout e estilo
-st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="🙏", layout="centered")
+st.set_page_config(page_title="Minha Conversa com Jesus", page_icon="🕊️", layout="centered")
 st.markdown("""
     <style>
-        body {
-            background-color: #fefefe;
+        /* Fundo principal */
+        .stApp {
+            background-color: #F5F6F5; /* Branco Nuvem */
         }
+        /* Estilo para o título */
         .titulo {
             font-size: 38px;
             font-weight: bold;
-            color: #4B0082;
+            color: #6B4EAA; /* Roxo Espiritual */
             text-align: center;
             margin-top: 20px;
         }
+        /* Estilo para o subtítulo */
         .subtitulo {
             font-size: 20px;
-            color: #444;
+            color: #A3BFFA; /* Cinza Suave */
             text-align: center;
             margin-bottom: 30px;
         }
+        /* Estilo para caixas de conteúdo */
         .caixa {
-            background-color: #ffffff;
+            background-color: #F5F6F5; /* Branco Nuvem */
             padding: 30px;
             border-radius: 16px;
             box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            color: #6B4EAA; /* Roxo Espiritual */
+            border: 1px solid #A3BFFA; /* Cinza Suave */
         }
-        .botao {
-            background-color: #4B0082;
-            color: white;
+        /* Estilo para botões */
+        .stButton>button {
+            background-color: #4A90E2; /* Azul Sereno */
+            color: #F5F6F5; /* Branco Nuvem */
             font-size: 18px;
             padding: 10px 20px;
             border: none;
             border-radius: 8px;
+            transition: all 0.3s ease;
         }
+        .stButton>button:hover {
+            background-color: #A3BFFA; /* Cinza Suave */
+            color: #6B4EAA; /* Roxo Espiritual */
+        }
+        /* Estilo para entradas de texto */
+        .stTextInput>div>input {
+            background-color: #F5F6F5; /* Branco Nuvem */
+            color: #6B4EAA; /* Roxo Espiritual */
+            border: 1px solid #A3BFFA; /* Cinza Suave */
+            border-radius: 8px;
+        }
+        /* Estilo para destaques */
+        .highlight {
+            color: #F7E4A5; /* Dourado Claro */
+            font-weight: bold;
+        }
+        /* Estilo para o rodapé */
         footer {
             text-align: center;
             font-size: 14px;
-            color: gray;
+            color: #A3BFFA; /* Cinza Suave */
             margin-top: 30px;
+        }
+        /* Estilo para a imagem do QR Code */
+        .stImage>img {
+            border: 2px solid #A3BFFA; /* Cinza Suave */
+            border-radius: 8px;
+        }
+        /* Estilo para o código Pix */
+        .stCodeBlock {
+            background-color: #F5F6F5; /* Branco Nuvem */
+            border: 1px solid #A3BFFA; /* Cinza Suave */
+            border-radius: 8px;
         }
     </style>
 """, unsafe_allow_html=True)
 
 # Título
-st.markdown("<div class='titulo'>🙏 Minha Conversa com Jesus</div>", unsafe_allow_html=True)
+st.markdown("<div class='titulo'>🕊️ Minha Conversa com Jesus</div>", unsafe_allow_html=True)
 st.markdown("<div class='subtitulo'>Como você está se sentindo hoje?</div>", unsafe_allow_html=True)
 
 # Entrada do usuário
