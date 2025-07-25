@@ -114,11 +114,16 @@ st.markdown(
     <div style="margin:32px 0 16px 0; padding:18px; background:#e6f7fa; border-radius:8px; border:1px solid #a7d8de;">
         <strong>Esse aplicativo será sempre grátis.</strong><br>
         Se você for tocado por Deus, compartilhe este app com quem está precisando.<br>
-        Também, se desejar, você pode fazer uma oferta de qualquer valor para ajudar o ministério.
+        Também, se desejar, você pode fazer uma oferta de qualquer valor para ajudar o ministério.<br>
+        <br>
+        <span style="font-size:16px">Para ofertar, escaneie o QR Code abaixo:</span>
     </div>
     """,
     unsafe_allow_html=True
 )
+
+# EXIBE O QR CODE
+st.image("QRCODE.jpeg", caption="Faça sua oferta escaneando o QR Code", use_column_width=True)
 
 st.markdown("---")
 st.markdown(
