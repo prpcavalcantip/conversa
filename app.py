@@ -104,7 +104,7 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 texto_jesus = resposta_jesus.choices[0].message.content.strip()
 
                 st.success(f"🌅 **Devocional:**\n\n{texto_devocional}")
-                st.success(f"💬 **Conselho de Jesus:(beseado nas palavras de Jesus nos evangelhos**\n\n{texto_jesus}")
+                st.success(f"💬 **Conselho de Jesus** *(baseado nos ensinamentos de Jesus nos evangelhos)*\n\n{texto_jesus}")
 
             except Exception as e:
                 st.error("❌ Não foi possível obter a resposta agora.")
