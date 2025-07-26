@@ -72,7 +72,7 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 "3) Práticas para vida diária (sugestões simples e concretas para viver esse tema)."
             )
             prompt_jesus = (
-                f"Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual, "
+                f"Responda como se fosse Jesus, em primeira pessoa, usando linguagem atual,sempre baseado nas palavras de Jesus nos evangelhos. "
                 f"com acolhimento, empatia e sabedoria, sobre: '{sentimento_user.strip()}'. "
                 "Não cite versículos, apenas fale como Jesus falaria hoje, com conselhos amorosos. "
                 "Não utilize a expressão 'querido amigo' ou 'querido(a)'. Vá direto ao conselho, de forma acolhedora e prática."
@@ -104,7 +104,7 @@ if st.button("✨ Gerar Devocional e Conselho de Jesus"):
                 texto_jesus = resposta_jesus.choices[0].message.content.strip()
 
                 st.success(f"🌅 **Devocional:**\n\n{texto_devocional}")
-                st.success(f"💬 **Conselho de Jesus:**\n\n{texto_jesus}")
+                st.success(f"💬 **Conselho de Jesus:(beseado nas palavras de Jesus nos evangelhos**\n\n{texto_jesus}")
 
             except Exception as e:
                 st.error("❌ Não foi possível obter a resposta agora.")
