@@ -166,7 +166,7 @@ if submit_button and sentimento_user.strip():
         prompt_devocional = (
             f"Crie uma devocional cristã sobre '{sentimento_user.strip()}'. "
             "Divida em três partes: "
-            "1) Texto para meditação: um texto longo (300-400 palavras), profundamente reflexivo, acolhedor, com linguagem atual, sem citar versículos, que conecte emocionalmente e espiritualmente com o sentimento descrito, oferecendo insights e esperança. "
+            "1) Texto para meditação: comece com uma citação bíblica (com referência, ex.: Mateus 11:28) diretamente relacionada ao sentimento descrito, seguida por um texto longo (300-400 palavras), profundamente reflexivo, acolhedor, em linguagem atual, que conecte emocionalmente e espiritualmente com o sentimento, oferecendo insights e esperança. Não inclua outros versículos além da citação inicial. "
             "2) Oração: uma oração curta (50-100 palavras), profunda, em linguagem atual, que expresse confiança e conexão com Deus. "
             "3) Práticas para vida diária: 3-5 sugestões simples e concretas para viver esse tema no cotidiano."
         )
@@ -186,7 +186,7 @@ if submit_button and sentimento_user.strip():
                     {"role": "system", "content": "Você é um pastor cristão, acolhedor, reflexivo, atual, simples e prático."},
                     {"role": "user", "content": prompt_devocional}
                 ],
-                max_tokens=800,  # Aumentado para acomodar texto mais longo
+                max_tokens=800,
                 temperature=0.85
             )
             texto_devocional = resposta_devocional.choices[0].message.content.strip()
